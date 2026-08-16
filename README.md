@@ -1,4 +1,10 @@
 ## Skills
 
-- [**direction-selection**](https://github.com/osabased/roblox-skills/blob/main/direction-selection/SKILL.md) — Select the best-supported direction before consequential planning or implementation.
-- [**structure-roblox-projects**](https://github.com/osabased/roblox-skills/blob/main/structure-roblox-projects/SKILL.md) — Structure Roblox experiences and Luau codebases around clear ownership, project conventions, and explicit modification boundaries.
+### General skills
+
+- [**direction-selection**](https://github.com/osabased/roblox-skills/tree/main/direction-selection "direction-selection") — Select the best-supported direction before consequential planning or implementation.
+
+### Roblox skills
+
+- [**structure-roblox-projects**](https://github.com/osabased/roblox-skills/tree/main/structure-roblox-projects "structure-roblox-projects") — Structure Roblox experiences and Luau codebases around clear ownership, project conventions, and explicit modification boundaries.
+- [**roblox-resource-acquisition**](https://github.com/osabased/roblox-skills/tree/main/roblox-resource-acquisition "roblox-resource-acquisition") — Find, evaluate, verify, learn, package, refresh, and validate Roblox community resources as reusable agent skills.
