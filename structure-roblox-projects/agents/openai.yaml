@@ -1,0 +1,4 @@
+interface:
+  display_name: "Structure Roblox Projects"
+  short_description: "Organize Roblox projects within authorized scope"
+  default_prompt: "Use $structure-roblox-projects to review or organize this Roblox project within the modification scope I authorize."

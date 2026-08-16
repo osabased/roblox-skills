@@ -1,0 +1,4 @@
+interface:
+  display_name: "Direction Selection"
+  short_description: "Choose a best-supported direction before commitment"
+  default_prompt: "Use $direction-selection to compare credible approaches and select a best-supported direction before implementation."
