@@ -1,0 +1,28 @@
+# Copy this file OUTSIDE the skill package into a curated registry.
+# Registry membership is an explicit user/project trust decision.
+schema_version: 1
+
+# Stable registry key. Lowercase kebab-case; do not change it casually.
+slug: ""
+name: ""
+
+capabilities: []
+use_when: []
+avoid_when: []
+
+# Trust binds to this canonical upstream identity, not merely to `name`.
+canonical_url: ""
+# Optional exact package coordinate/identifier when the resource has one.
+package_id: ""
+# Optional convenience instructions; this is not part of resource identity.
+install_hint: ""
+# Optional specific DevForum topic provenance/discussion link.
+devforum_url: ""
+
+# Why the user/project trusts and prefers considering this resource.
+curation_reason: ""
+
+# Informational only. Trust does not freeze volatile upstream facts.
+# Optional ISO date when you last reviewed the choice.
+last_reviewed: ""
+notes: []

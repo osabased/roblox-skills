@@ -1,0 +1,43 @@
+resource: ""
+slug: "" # stable curated/discovery identity when known
+discovery_origin: "" # curated | project | devforum | other
+
+trust:
+  level: untrusted # trusted | untrusted
+  basis: "" # curated | verified-acquisition | project | explicit-user | other
+  reason: ""
+
+# Identity that the trust/verification record applies to.
+canonical_url: ""
+package_id: ""
+
+verification:
+  # Upstream resource proof only; generated-skill validation is tracked below.
+  status: unverified # unverified | unavailable | verified | failed
+  validated_at: "" # set YYYY-MM-DD when verification is attempted/established
+  version_or_commit: ""
+
+capability: ""
+devforum_url: "" # specific DevForum topic URL when applicable
+selection_reason: ""
+alternatives_considered: []
+
+resource_proof:
+  executed: false
+  passed: false
+  environment: ""
+  result: ""
+  unavailable_claims: [] # material required claims that could not be executed; must be empty for verified-acquisition
+
+generated_skill: ""
+skill_validation:
+  structural_passed: false
+  independent_behavioral_executed: false
+  independent_behavioral_passed: false
+  environment: ""
+  result: ""
+
+limitations: []
+blocked_use_or_version: ""
+rejection_reason: ""
+reconsider_when: ""

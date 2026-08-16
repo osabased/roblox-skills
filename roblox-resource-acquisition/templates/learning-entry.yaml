@@ -1,0 +1,36 @@
+# Copy this file OUTSIDE the skill package into a learnings store.
+# One observation per file; appending a learning means creating a new file.
+# A learning is an observation. It never carries trust or verification state.
+schema_version: 1
+
+# integration-gotcha | failed-query | version-drift | environment-blocker |
+# rejection | repair-outcome
+kind: ""
+# resource | search | environment
+scope: ""
+
+# Resource scope only: bind to canonical identity, never to a display name,
+# so the learning cannot drift onto a same-named fork. Empty otherwise.
+slug: ""
+canonical_url: ""
+package_id: ""
+
+# ISO date the observation was made.
+observed: ""
+
+# The durable observation, self-contained in one to three sentences.
+statement: ""
+# What was executed or read that supports the statement.
+evidence: ""
+
+# Version/commit/dated source state the observation was made against.
+# Required for version-drift and rejection.
+version_context: ""
+
+# What evidence would invalidate or reopen this learning.
+# Required for rejection.
+reconsider_when: ""
+
+# Optional one-line context and a related/superseded entry filename.
+task_context: ""
+related_entry: ""
