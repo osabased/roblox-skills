@@ -1,5 +1,4 @@
-## direction-selection
-Selects the best-supported direction before consequential planning or implementation, helping prevent premature commitment to the first plausible approach.
+## Skills
 
-## structure-roblox-projects
-Structures Roblox experiences and Luau codebases within explicit modification authority, covering project architecture, DataModel placement, runtime ownership, ModuleScript organization, entrypoints, Rojo, Script Sync, migrations, and scoped work in existing projects.
+- [**direction-selection**](https://github.com/osabased/roblox-skills/blob/main/direction-selection/SKILL.md) — Select the best-supported direction before consequential planning or implementation.
+- [**structure-roblox-projects**](https://github.com/osabased/roblox-skills/blob/main/structure-roblox-projects/SKILL.md) — Structure Roblox experiences and Luau codebases around clear ownership, project conventions, and explicit modification boundaries.
