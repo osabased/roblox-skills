@@ -24,22 +24,22 @@ One repair cycle, in order:
 
 ## Classes
 
-### 1. Resource failure — untrusted discovery
+### 1. Resource failure — untrusted candidate
 
 The resource itself cannot do what the acquisition brief requires.
 
-- **Action:** reject the candidate; return to sections 1–2 for the next candidate, which enters qualification fresh.
+- **Action:** reject the affected candidate. Return to sections 1–2 for another candidate only when alternatives are in scope; otherwise report that the targeted or existing candidate cannot satisfy the request.
 - **Re-run:** nothing for the rejected candidate.
 - **Record:** a `rejection` learning — identity, `version_context`, concise reason, `reconsider_when`.
 - **Status:** the candidate's resource verification is recorded `failed`. Nothing else moves.
 
-### 2. Resource failure — curated/trusted
+### 2. Resource failure — trusted
 
-A curated resource contradicts the intended use.
+A resource with a recorded policy trust basis contradicts the intended use.
 
-- **Action:** block the affected version/use and report the contradiction to the user. Catalog membership, canonical identity, and trust stay untouched until the user/project changes them.
+- **Action:** block the affected version/use and report the contradiction to the user. Canonical identity and recorded trust stay untouched until the controlling user/project policy changes them; curated catalog membership also remains untouched.
 - **Re-run:** nothing automatically; the user's decision determines the next step.
-- **Record:** a `version-drift` or `integration-gotcha` learning bound to the curated identity.
+- **Record:** a `version-drift` or `integration-gotcha` learning bound to the trusted identity.
 - **Status:** the affected verification is recorded `failed`/blocked. Trust is not revoked.
 
 ### 3. Understanding failure
@@ -107,7 +107,7 @@ State, truthfully and compactly:
 - the failing check(s) and each attempt made, with its patch and result;
 - current resource verification and `skill_validation` states, with no optimistic rounding;
 - the learning entries appended during the loop;
-- the user's options: reject the untrusted candidate, block the curated use, accept `unavailable`, supply an environment fix, or direct a specific change.
+- the user's options: reject the untrusted candidate, block the trusted use, accept `unavailable`, supply an environment fix, or direct a specific change.
 
 ## Status separation
 
