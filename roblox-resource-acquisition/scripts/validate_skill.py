@@ -36,6 +36,7 @@ REQUIRED_HEADINGS = [
     "Alternatives",
     "Provenance",
     "Prerequisites and installation",
+    "Operational reconciliation",
     "Mental model",
     "Client/server placement",
     "Common path",
@@ -68,6 +69,9 @@ TEMPLATE_SENTINELS = [
     "Provide the shortest source-grounded setup/use sequence. Do not call it runtime-verified unless the recorded resource verification status is `verified`.",
     "-- Minimal example grounded in the reviewed source/API.",
     "Document only source-grounded public APIs that the agent needs frequently; distinguish source review from runtime verification.",
+    "Policy: REQUIRED/NOT-APPLICABLE — REASON",
+    "Installed-state check: RESOURCE-SPECIFIC CHECK OR IMMUTABLE-INSTALL EXPLANATION",
+    "Expected identity/state: RESOURCE SLUG + CANONICAL URL + PACKAGE ID WHEN APPLICABLE + REVIEWED VERSION/COMMIT/STATE",
     "Likely cause -> diagnosis -> repair.",
     "State the applicable resource-specific trust boundaries and mitigations. If none are special to this resource, say so explicitly. Preserve server authority; never embed secrets in source.",
     "Both lines must be concrete enough for another agent to execute/check; do not use placeholders or generic outcomes such as “check it” or “it works.”",
@@ -84,17 +88,26 @@ TEMPLATE_LINE_PATTERNS = [
     re.compile(r"^\s*[-*]\s*Source version/release/commit:\s*IDENTIFIER(?:\s+\(.*\))?\s*$", re.M | re.I),
     re.compile(r"^\s*[-*]\s*Source review date:\s*YYYY-MM-DD\s*$", re.M | re.I),
     re.compile(r"^\s*[-*]\s*Resource verification:\s*VERIFIED/UNVERIFIED/UNAVAILABLE\s*$", re.M | re.I),
+    re.compile(r"^\s*[-*]\s*Resource slug:\s*RESOURCE-SLUG\s*$", re.M | re.I),
+    re.compile(r"^\s*[-*]\s*Package identity:\s*PACKAGE-ID(?:\s+\(.*\))?\s*$", re.M | re.I),
     re.compile(r"^\s*Run:\s*\.\.\.\s*$", re.M | re.I),
     re.compile(r"^\s*Pass condition:\s*\.\.\.\s*$", re.M | re.I),
 ]
 
 PROVENANCE_FIELD_ALIASES = {
+    "Resource slug": ("Resource slug",),
+    "Package identity": ("Package identity",),
     "DevForum": ("DevForum",),
     "Canonical source/docs": ("Canonical source/docs",),
     "Source version/release/commit": ("Source version/release/commit", "Validated version/release/commit"),
     "Source review date": ("Source review date", "Validation date"),
     "Resource verification": ("Resource verification",),
 }
+
+NO_PACKAGE_IDENTITY_RE = re.compile(
+    r"^(?:the resource has no package identity|no package identity(?: exists| is applicable)?|not applicable because .+)[.]?$",
+    re.I,
+)
 
 SENSITIVE_URL_QUERY_KEYS = {
     "access_token",
@@ -324,6 +337,7 @@ SECTION_MIN_WORDS = {
     "Do not use when": 4,
     "Alternatives": 6,
     "Prerequisites and installation": 5,
+    "Operational reconciliation": 30,
     "Mental model": 8,
     "Client/server placement": 12,
     "Common path": 4,
@@ -682,6 +696,7 @@ def validate_section_shapes(sections: dict[str, str], errors: list[str]) -> None
         "Limitations",
         "Security notes",
         "Version drift",
+        "Operational reconciliation",
     }
     for heading, minimum in SECTION_MIN_WORDS.items():
         content = sections.get(heading, "")
@@ -1027,6 +1042,24 @@ def validate_skill(root: Path) -> tuple[list[str], list[str]]:
             + "); prefer Source version/release/commit and Source review date"
         )
 
+    resource_slug_value = provenance_values.get("Resource slug")
+    if resource_slug_value and not SLUG_RE.fullmatch(resource_slug_value.strip()):
+        errors.append("Resource slug provenance must be lowercase kebab-case")
+
+    package_identity_value = provenance_values.get("Package identity")
+    if package_identity_value:
+        normalized_package = package_identity_value.strip()
+        if word_count(normalized_package) < 1:
+            errors.append("Package identity provenance must name the package identity or explicitly state none exists")
+        elif not NO_PACKAGE_IDENTITY_RE.fullmatch(normalized_package) and normalize_quality_text(normalized_package) in {
+            "package id",
+            "package identity",
+            "unknown",
+            "none",
+            "n a",
+        }:
+            errors.append("Package identity provenance is generic; name it or explicitly state that none exists")
+
     devforum_value = provenance_values.get("DevForum")
     devforum_url: str | None = None
     if devforum_value:
@@ -1168,6 +1201,93 @@ def validate_skill(root: Path) -> tuple[list[str], list[str]]:
             "Client/server placement must explicitly describe both client and server behavior/placement"
         )
 
+    reconciliation = sections.get("Operational reconciliation", "")
+    reconciliation_fields = (
+        "Policy",
+        "Installed-state check",
+        "Expected identity/state",
+        "Parent-state check",
+        "Mismatch/unknown action",
+        "Defect handoff",
+    )
+    reconciliation_values: dict[str, str | None] = {}
+    reconciliation_unfenced = strip_fenced_blocks(mask_html_comments(reconciliation))
+    for label in reconciliation_fields:
+        field_count = len(
+            re.findall(
+                rf"^[ \t]{{0,3}}(?:[-*][ \t]+)?{re.escape(label)}[ \t]*:",
+                reconciliation_unfenced,
+                re.M | re.I,
+            )
+        )
+        if field_count > 1:
+            errors.append(f"Operational reconciliation contains duplicate labeled field: {label}")
+        value = extract_labeled_value(reconciliation, label)
+        reconciliation_values[label] = value
+        if value is None:
+            errors.append(f"Operational reconciliation is missing labeled field: {label}")
+        elif word_count(value) < 3 or is_vague_section(value):
+            errors.append(f"Operational reconciliation field is too thin/vague: {label}")
+
+    policy_value = reconciliation_values.get("Policy")
+    if policy_value:
+        policy_match = re.fullmatch(
+            r"(required|not-applicable)\s*(?:[-—:]\s*)?(.+)", policy_value.strip(), re.I
+        )
+        if not policy_match or word_count(policy_match.group(2) if policy_match else "") < 3:
+            errors.append("Operational reconciliation Policy must be required or not-applicable with a concrete reason")
+        elif policy_match.group(1).lower() == "not-applicable" and not re.search(
+            r"\b(?:immutable|pinned|fixed|version[- ]insensitive|cannot drift|exact (?:version|commit|state))\b",
+            policy_match.group(2),
+            re.I,
+        ):
+            errors.append("not-applicable reconciliation requires an immutable-install or version-insensitivity reason")
+
+    installed_check = reconciliation_values.get("Installed-state check")
+    if installed_check and not re.search(
+        r"\b(?:check|inspect|read|compare|hash|manifest|lockfile|package|asset|commit|version|immutable|pinned|fixed)\b",
+        installed_check,
+        re.I,
+    ):
+        errors.append("Installed-state check must name a resource-specific check or immutable installation mechanism")
+
+    expected_state = reconciliation_values.get("Expected identity/state")
+    canonical_identity_url = canonical_url or devforum_url
+    if expected_state:
+        if resource_slug_value and resource_slug_value.strip().lower() not in expected_state.lower():
+            errors.append("Expected identity/state must include the provenance Resource slug")
+        if canonical_identity_url and canonical_identity_url.lower() not in expected_state.lower():
+            errors.append("Expected identity/state must include the canonical provenance URL")
+        if version_value and version_value.strip().lower() not in expected_state.lower():
+            errors.append("Expected identity/state must include the reviewed provenance version/state")
+
+    parent_state_check = reconciliation_values.get("Parent-state check")
+    if parent_state_check and not (
+        re.search(r"schema[- ]version\s*2", parent_state_check, re.I)
+        and re.search(r"\brecords?\b", parent_state_check, re.I)
+        and re.search(r"\blearnings?\b", parent_state_check, re.I)
+        and contains_word(parent_state_check, "slug")
+        and re.search(r"\bcanonical\b", parent_state_check, re.I)
+    ):
+        errors.append("Parent-state check must load matching v2 records and learnings by slug plus canonical identity")
+
+    mismatch_action = reconciliation_values.get("Mismatch/unknown action")
+    if mismatch_action and not (
+        re.search(r"\b(?:stop|block|halt|pause)\b", mismatch_action, re.I)
+        and "roblox-resource-acquisition" in mismatch_action.lower()
+        and "repair/reconcile" in mismatch_action.lower()
+    ):
+        errors.append("Mismatch/unknown action must stop the affected use and invoke repair/reconcile")
+
+    defect_handoff = reconciliation_values.get("Defect handoff")
+    if defect_handoff:
+        required_terms = ("task", "installed", "expected", "observed", "reproduction")
+        if not all(contains_word(defect_handoff, term) for term in required_terms) or not (
+            "roblox-resource-acquisition" in defect_handoff.lower()
+            and "repair/reconcile" in defect_handoff.lower()
+        ):
+            errors.append("Defect handoff must capture task/installed/expected/observed/reproduction evidence and invoke repair/reconcile")
+
     verify = sections.get("Verify after installation", "")
     run_step = extract_required_labeled_value(verify, "Run")
     pass_condition = extract_required_labeled_value(verify, "Pass condition")
@@ -1244,3 +1364,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

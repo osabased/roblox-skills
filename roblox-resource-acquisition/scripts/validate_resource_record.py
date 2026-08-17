@@ -11,6 +11,7 @@ with code 2 and an install hint when PyYAML is missing.
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -32,6 +33,7 @@ from _common import (
 )
 
 TOP_LEVEL_FIELDS = {
+    "schema_version",
     "resource",
     "slug",
     "discovery_origin",
@@ -39,6 +41,7 @@ TOP_LEVEL_FIELDS = {
     "canonical_url",
     "package_id",
     "verification",
+    "reconciliation",
     "capability",
     "devforum_url",
     "selection_reason",
@@ -46,6 +49,7 @@ TOP_LEVEL_FIELDS = {
     "resource_proof",
     "generated_skill",
     "skill_validation",
+    "host_adoptions",
     "limitations",
     "blocked_use_or_version",
     "rejection_reason",
@@ -55,6 +59,15 @@ REQUIRED_TOP_LEVEL_FIELDS = TOP_LEVEL_FIELDS
 NESTED_FIELDS = {
     "trust": {"level", "basis", "reason"},
     "verification": {"status", "validated_at", "version_or_commit"},
+    "reconciliation": {
+        "status",
+        "checked_at",
+        "installed_identity",
+        "installed_version_or_commit",
+        "detection_method",
+        "parent_state_sources",
+        "result",
+    },
     "resource_proof": {"executed", "passed", "environment", "result", "unavailable_claims"},
     "skill_validation": {
         "structural_passed",
@@ -62,12 +75,17 @@ NESTED_FIELDS = {
         "independent_behavioral_passed",
         "environment",
         "result",
+        "catalog_routing_status",
+        "catalog_fingerprint",
+        "catalog_environment",
+        "catalog_result",
     },
 }
 LIST_FIELDS = {
     "alternatives_considered",
     "limitations",
     "resource_proof.unavailable_claims",
+    "reconciliation.parent_state_sources",
 }
 BOOL_FIELDS = {
     "resource_proof.executed",
@@ -95,15 +113,36 @@ STRING_FIELDS = {
     "verification.status",
     "verification.validated_at",
     "verification.version_or_commit",
+    "reconciliation.status",
+    "reconciliation.checked_at",
+    "reconciliation.installed_identity",
+    "reconciliation.installed_version_or_commit",
+    "reconciliation.detection_method",
+    "reconciliation.result",
     "resource_proof.environment",
     "resource_proof.result",
     "skill_validation.environment",
     "skill_validation.result",
+    "skill_validation.catalog_routing_status",
+    "skill_validation.catalog_fingerprint",
+    "skill_validation.catalog_environment",
+    "skill_validation.catalog_result",
 }
 ALLOWED_ORIGINS = {"curated", "project", "devforum", "other"}
 ALLOWED_TRUST_LEVELS = {"trusted", "untrusted"}
 ALLOWED_TRUST_BASES = {"", "curated", "verified-acquisition", "project", "explicit-user", "other"}
 ALLOWED_VERIFICATION = {"unverified", "unavailable", "verified", "failed"}
+ALLOWED_RECONCILIATION = {"matched", "mismatched", "blocked", "unknown", "not-applicable"}
+ALLOWED_CATALOG_ROUTING = {"not-applicable", "unverified", "verified", "unavailable", "failed"}
+ALLOWED_HOST_SCOPES = {"repo", "user", "admin", "plugin", "other"}
+ALLOWED_HOST_STATUSES = {"installed", "operational", "blocked", "disabled", "removed", "unavailable", "failed"}
+ALLOWED_PRESENCE = {"present", "absent", "not-applicable", "unknown"}
+ALLOWED_DISCOVERY = {"yes", "no", "unknown"}
+ALLOWED_ENABLED = {"yes", "no", "not-applicable", "unknown"}
+ALLOWED_ACTIVATION = {"passed", "failed", "not-run", "unavailable"}
+HOST_FIELDS = {"host", "scope", "location", "status", "checked_at", "result", "evidence"}
+HOST_EVIDENCE_FIELDS = {"installed", "registered", "discoverable", "enabled", "explicit_activation"}
+FINGERPRINT_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 def load_record(path: Path) -> dict[str, Any]:
@@ -116,6 +155,21 @@ def load_record(path: Path) -> dict[str, Any]:
     verification = loaded.get("verification")
     if isinstance(verification, dict) and isinstance(verification.get("validated_at"), date):
         verification["validated_at"] = verification["validated_at"].isoformat()
+    reconciliation = loaded.get("reconciliation")
+    if isinstance(reconciliation, dict) and isinstance(reconciliation.get("checked_at"), date):
+        reconciliation["checked_at"] = reconciliation["checked_at"].isoformat()
+    host_adoptions = loaded.get("host_adoptions")
+    if isinstance(host_adoptions, list):
+        for adoption in host_adoptions:
+            if isinstance(adoption, dict) and isinstance(adoption.get("checked_at"), date):
+                adoption["checked_at"] = adoption["checked_at"].isoformat()
+            # PyYAML follows YAML 1.1 and resolves unquoted yes/no as booleans.
+            # Preserve the public yes/no evidence vocabulary for ordinary YAML input.
+            if isinstance(adoption, dict) and isinstance(adoption.get("evidence"), dict):
+                evidence = adoption["evidence"]
+                for field in ("discoverable", "enabled"):
+                    if isinstance(evidence.get(field), bool):
+                        evidence[field] = "yes" if evidence[field] else "no"
     return loaded
 
 
@@ -142,6 +196,9 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
         errors.append(f"unknown top-level field(s): {', '.join(unknown)}")
     if missing:
         errors.append(f"missing required top-level field(s): {', '.join(missing)}")
+
+    if data.get("schema_version") != 2:
+        errors.append("schema_version must be integer 2; legacy records must enter repair/reconcile")
 
     for parent, allowed in NESTED_FIELDS.items():
         value = data.get(parent)
@@ -267,6 +324,40 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
     if proof_passed is True and status not in {"verified"}:
         errors.append("passing overall resource_proof requires verification.status: verified")
 
+    reconciliation_status = dotted_get(data, "reconciliation.status")
+    reconciliation_checked = dotted_get(data, "reconciliation.checked_at")
+    installed_identity = dotted_get(data, "reconciliation.installed_identity")
+    installed_version = dotted_get(data, "reconciliation.installed_version_or_commit")
+    detection_method = dotted_get(data, "reconciliation.detection_method")
+    parent_sources = dotted_get(data, "reconciliation.parent_state_sources")
+    reconciliation_result = dotted_get(data, "reconciliation.result")
+    if isinstance(reconciliation_status, str) and reconciliation_status not in ALLOWED_RECONCILIATION:
+        errors.append(
+            "reconciliation.status must be matched, mismatched, blocked, unknown, or not-applicable"
+        )
+    if isinstance(reconciliation_checked, str) and reconciliation_checked.strip():
+        errors.extend(validate_date(reconciliation_checked.strip(), field="reconciliation.checked_at"))
+    if reconciliation_status in {"matched", "mismatched", "blocked", "not-applicable"}:
+        if not nonempty_string(reconciliation_checked):
+            errors.append(f"reconciliation.status {reconciliation_status!r} requires reconciliation.checked_at")
+        if not nonempty_string(detection_method):
+            errors.append(f"reconciliation.status {reconciliation_status!r} requires reconciliation.detection_method")
+        if not nonempty_string(reconciliation_result):
+            errors.append(f"reconciliation.status {reconciliation_status!r} requires reconciliation.result")
+    if reconciliation_status == "matched":
+        if not nonempty_string(installed_identity):
+            errors.append("matched reconciliation requires reconciliation.installed_identity")
+        if not nonempty_string(installed_version):
+            errors.append("matched reconciliation requires reconciliation.installed_version_or_commit")
+        if not isinstance(parent_sources, list) or not parent_sources:
+            errors.append("matched reconciliation requires reconciliation.parent_state_sources")
+    if reconciliation_status == "mismatched" and not (
+        nonempty_string(installed_identity) or nonempty_string(installed_version)
+    ):
+        errors.append("mismatched reconciliation must record an observed installed identity or version/state")
+    if reconciliation_status == "blocked" and not nonempty_string(data.get("blocked_use_or_version")):
+        errors.append("blocked reconciliation requires blocked_use_or_version")
+
     structural = dotted_get(data, "skill_validation.structural_passed")
     independent_executed = dotted_get(data, "skill_validation.independent_behavioral_executed")
     independent_passed = dotted_get(data, "skill_validation.independent_behavioral_passed")
@@ -279,6 +370,113 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
             errors.append("executed independent behavioral validation must record skill_validation.environment")
         if not nonempty_string(skill_result):
             errors.append("executed independent behavioral validation must record skill_validation.result")
+
+    catalog_status = dotted_get(data, "skill_validation.catalog_routing_status")
+    catalog_fingerprint = dotted_get(data, "skill_validation.catalog_fingerprint")
+    catalog_environment = dotted_get(data, "skill_validation.catalog_environment")
+    catalog_result = dotted_get(data, "skill_validation.catalog_result")
+    if isinstance(catalog_status, str) and catalog_status not in ALLOWED_CATALOG_ROUTING:
+        errors.append(
+            "skill_validation.catalog_routing_status must be not-applicable, unverified, verified, unavailable, or failed"
+        )
+    if nonempty_string(catalog_fingerprint) and not FINGERPRINT_RE.fullmatch(catalog_fingerprint.strip()):
+        errors.append("skill_validation.catalog_fingerprint must use sha256:<64 lowercase hex characters>")
+    if catalog_status in {"verified", "unavailable", "failed"}:
+        if not nonempty_string(catalog_fingerprint):
+            errors.append(f"catalog routing status {catalog_status!r} requires skill_validation.catalog_fingerprint")
+        if not nonempty_string(catalog_environment):
+            errors.append(f"catalog routing status {catalog_status!r} requires skill_validation.catalog_environment")
+        if not nonempty_string(catalog_result):
+            errors.append(f"catalog routing status {catalog_status!r} requires skill_validation.catalog_result")
+
+    host_adoptions = data.get("host_adoptions")
+    if not isinstance(host_adoptions, list):
+        errors.append("host_adoptions must be a list")
+        host_adoptions = []
+    seen_host_targets: set[tuple[str, str, str]] = set()
+    for index, adoption in enumerate(host_adoptions):
+        prefix = f"host_adoptions[{index}]"
+        if not isinstance(adoption, dict):
+            errors.append(f"{prefix} must be a mapping")
+            continue
+        unknown_host_fields = sorted(set(adoption) - HOST_FIELDS)
+        missing_host_fields = sorted(HOST_FIELDS - set(adoption))
+        if unknown_host_fields:
+            errors.append(f"{prefix} has unknown field(s): {', '.join(unknown_host_fields)}")
+        if missing_host_fields:
+            errors.append(f"{prefix} is missing field(s): {', '.join(missing_host_fields)}")
+        for field in ("host", "scope", "location", "status", "checked_at", "result"):
+            if not nonempty_string(adoption.get(field)):
+                errors.append(f"{prefix}.{field} must be a non-empty string")
+        scope = adoption.get("scope")
+        host_status = adoption.get("status")
+        if isinstance(scope, str) and scope not in ALLOWED_HOST_SCOPES:
+            errors.append(f"{prefix}.scope must be repo, user, admin, plugin, or other")
+        if isinstance(host_status, str) and host_status not in ALLOWED_HOST_STATUSES:
+            errors.append(
+                f"{prefix}.status must be installed, operational, blocked, disabled, removed, unavailable, or failed"
+            )
+        checked_at = adoption.get("checked_at")
+        if isinstance(checked_at, str) and checked_at.strip():
+            errors.extend(validate_date(checked_at.strip(), field=f"{prefix}.checked_at"))
+        target = tuple(str(adoption.get(field, "")).strip().lower() for field in ("host", "scope", "location"))
+        if target in seen_host_targets:
+            errors.append(f"duplicate host adoption target at {prefix}")
+        seen_host_targets.add(target)
+
+        evidence = adoption.get("evidence")
+        if not isinstance(evidence, dict):
+            errors.append(f"{prefix}.evidence must be a mapping")
+            continue
+        evidence_unknown = sorted(set(evidence) - HOST_EVIDENCE_FIELDS)
+        evidence_missing = sorted(HOST_EVIDENCE_FIELDS - set(evidence))
+        if evidence_unknown:
+            errors.append(f"{prefix}.evidence has unknown field(s): {', '.join(evidence_unknown)}")
+        if evidence_missing:
+            errors.append(f"{prefix}.evidence is missing field(s): {', '.join(evidence_missing)}")
+        installed = evidence.get("installed")
+        registered = evidence.get("registered")
+        discoverable = evidence.get("discoverable")
+        enabled = evidence.get("enabled")
+        activation = evidence.get("explicit_activation")
+        if installed not in ALLOWED_PRESENCE:
+            errors.append(f"{prefix}.evidence.installed has an invalid state")
+        if registered not in ALLOWED_PRESENCE:
+            errors.append(f"{prefix}.evidence.registered has an invalid state")
+        if discoverable not in ALLOWED_DISCOVERY:
+            errors.append(f"{prefix}.evidence.discoverable has an invalid state")
+        if enabled not in ALLOWED_ENABLED:
+            errors.append(f"{prefix}.evidence.enabled has an invalid state")
+        if activation not in ALLOWED_ACTIVATION:
+            errors.append(f"{prefix}.evidence.explicit_activation has an invalid state")
+
+        if host_status == "operational":
+            if installed not in {"present", "not-applicable"}:
+                errors.append(f"{prefix} operational requires installed present or not-applicable")
+            if registered not in {"present", "not-applicable"}:
+                errors.append(f"{prefix} operational requires registered present or not-applicable")
+            if discoverable != "yes":
+                errors.append(f"{prefix} operational requires discoverable: yes")
+            if enabled not in {"yes", "not-applicable"}:
+                errors.append(f"{prefix} operational requires enabled yes or not-applicable")
+            if activation != "passed":
+                errors.append(f"{prefix} operational requires explicit_activation: passed")
+        elif host_status == "installed" and installed != "present":
+            errors.append(f"{prefix} installed status requires evidence.installed: present")
+        elif host_status == "blocked" and installed not in {"present", "not-applicable"}:
+            errors.append(f"{prefix} blocked status requires installed present or not-applicable")
+        elif host_status == "disabled" and enabled != "no":
+            errors.append(f"{prefix} disabled status requires evidence.enabled: no")
+        elif host_status == "removed" and installed != "absent":
+            errors.append(f"{prefix} removed status requires evidence.installed: absent")
+        elif host_status == "unavailable" and not (
+            "unknown" in {installed, registered, discoverable, enabled} or activation == "unavailable"
+        ):
+            errors.append(f"{prefix} unavailable status requires unknown or unavailable evidence")
+        elif host_status == "failed" and not (
+            activation == "failed" or installed == "absent" or registered == "absent" or discoverable == "no"
+        ):
+            errors.append(f"{prefix} failed status requires a failed/negative evidence facet")
 
     generated_skill = data.get("generated_skill")
     if any(value is True for value in (structural, independent_executed, independent_passed)) and not nonempty_string(generated_skill):
@@ -362,3 +560,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

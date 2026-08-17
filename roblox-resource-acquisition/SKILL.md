@@ -1,7 +1,8 @@
 ---
 name: roblox-resource-acquisition
-description: Finds, evaluates, verifies, learns, packages, refreshes, and validates Roblox community resources as reusable agent skills. Use when a Roblox task needs a reusable capability not adequately covered by Roblox built-ins or already-trusted dependencies, when an existing resource skill needs source/version refresh, or when explicitly asked to discover, compare, or evaluate a community library, module, framework, plugin, package, or other Community Resource.
-compatibility: Scripts require Python 3.8+ and PyYAML (pip install -r requirements.txt). A single required parser keeps validation verdicts identical across environments; scripts exit with code 2 and an install hint when PyYAML is missing.
+description: Acquires, adopts, repairs, and reconciles Roblox community resources as reusable agent skills. Use when a Roblox task needs a community resource, when evaluating or comparing one, when generating or operationally adopting its child skill, when installed resource state may differ from that child's reviewed source state, or when ordinary use reveals a child-skill defect or a newer parent-side block.
+metadata:
+  compatibility: Scripts require Python 3.8+ and PyYAML (pip install -r requirements.txt). A single required parser keeps validation verdicts identical across environments; scripts exit with code 2 and an install hint when PyYAML is missing.
 ---
 
 # Roblox Resource Acquisition
@@ -14,15 +15,16 @@ Do not turn the first plausible DevForum result into a skill.
 
 Use this sequence:
 
-**need -> check built-ins/project -> consult trusted curated registry -> use if fit or discover if needed -> understand -> verify when required -> generate skill -> validate skill -> adopt, cache, or reject**
+**need -> check built-ins/project -> consult trusted curated registry -> use if fit or discover if needed -> understand -> verify when required -> generate skill -> validate artifact -> adopt operationally, cache, or reject -> reconcile and repair**
 
 Curation is an explicit trust decision by the user/project. **Trusted does not mean verified.** A curated resource may be used without re-proving the library from scratch, but volatile integration facts still need refreshing and a generated skill still has its own validation burden. Likewise, a resource passing its own tests does not prove that an agent can use it correctly.
 
 Choose the narrowest operating mode that satisfies the request:
 
 - **evaluate/compare** — stop after the requested evidence and decision; do not generate a skill as extra scope;
-- **acquire/adopt** — run the full workflow through generated-skill validation;
+- **acquire/adopt** — produce and validate the generated child artifact, then run the separate authorized host-adoption gate when operational adoption is requested;
 - **refresh** — for an existing resource skill, confirm canonical identity, re-check only the source/version surfaces that can have drifted, patch the skill, then rerun structural and affected behavioral tests. Do not restart broad discovery unless the current resource is materially unsuitable or alternatives were requested.
+- **repair/reconcile** — use for a defect found during ordinary use, an installed/source-state mismatch, a current matching block or adverse observation, or legacy child/record state. Reconcile identity and project/host state, enter the existing repair classification, rerun invalidated gates, and re-adopt only with authorization.
 
 ## 0. Decide whether acquisition is warranted
 
@@ -33,6 +35,7 @@ Before searching, derive a compact acquisition brief from the current task:
 - client/server boundary involved;
 - performance or scale requirements that materially matter;
 - installation/dependency constraints;
+- whether installed resource state can drift independently and how its identity/version can be observed;
 - what a minimal successful verification would demonstrate, when verification is required or useful.
 
 Consult the external learnings store (`references/learnings-store.md`) while deriving the brief. Recorded environment blockers shape which verification route the brief can realistically plan for; recorded gotchas and rejections set expectations early. A learning is a past observation, not current proof — it informs the brief and never decides acquisition by itself.
@@ -128,6 +131,7 @@ At minimum determine:
 8. Failure modes and common integration mistakes.
 9. Security-sensitive boundaries.
 10. Version-specific behavior relevant to the generated instructions.
+11. How a later direct user of the generated child can determine the installed resource identity/version, or why reconciliation is not applicable.
 
 Trace claims back to source/docs. Never invent an API from naming conventions or analogous libraries.
 
@@ -171,6 +175,8 @@ For acquisition/adoption work, create a dedicated reusable skill for a newly dis
 
 The generated skill must be operational guidance, not a copy of the DevForum post or README. It should teach an agent how to decide, install, use, verify, and troubleshoot the resource with minimal irrelevant context. Include the closest credible alternative or Roblox built-in when relevant; if none is meaningful, say why. Always retain a `Security notes` section: document applicable resource-specific trust boundaries, or explicitly state when there are no special ones beyond normal Roblox server-authoritative expectations.
 
+Every generated child must include the operational reconciliation contract from `references/resource-skill-contract.md`: stable resource identity, a `required` or justified `not-applicable` reconciliation policy, a resource-specific installed-state check, parent-state reconciliation, and a defect/mismatch handoff to this skill's `repair/reconcile` mode. Use `references/operational-lifecycle.md` for the shared lifecycle semantics; do not copy its host-independent rules into multiple references.
+
 Pin claims to the exact source version/release/commit reviewed when possible. If no stable identifier exists, record the exact review date and source state instead of pretending it is version-pinned. In the generated skill, record resource verification separately as `verified`, `unverified`, or `unavailable`; source review is not runtime proof.
 
 Do not treat trust in the upstream resource as proof that the generated instructions are correct. A generated skill must carry its own validation/verification state and must not claim behavioral validation merely because its resource was curated.
@@ -205,11 +211,13 @@ If no fresh-agent mechanism exists, run the same protocol as an explicit contrac
 
 Run `scripts/validate_skill.py <generated-skill-directory>` as a structural gate when Python is available. Treat its PASS as structural evidence only, never as proof that the prose, upstream claims, or runtime behavior are correct.
 
+Whenever a child is added, refreshed, repaired, or adopted, run `scripts/validate_skill_catalog.py <skill-directory-or-root> [...]` against the target generated-child set. Duplicate identities/descriptions fail. Reported activation-overlap clusters require the catalog behavioral tests in `references/testing-protocol.md`; static PASS never proves host routing.
+
 **Script dependencies.** All scripts in `scripts/` require Python 3.8+ and PyYAML (`pip install -r requirements.txt`); everything else is standard library. PyYAML is required rather than optional so that every environment parses registry, learnings, and record files identically — a validation verdict, and therefore a trust decision, must never depend on which parser happened to be installed. When PyYAML is missing the scripts exit with code 2 and an install hint (exit 1 remains validation failure, 0 pass). No other packages, databases, or network access are needed.
 
 ## 7. Repair the generated skill until it converges
 
-Repair scope is the generated resource skill and its validation evidence only — never this acquisition skill's own package files, which follow the self-growth boundaries below. Full loop mechanics live in `references/repair-loop.md`.
+Repair scope is the generated resource skill and its validation/adoption evidence, whether the defect appears before adoption or during ordinary post-adoption use — never this acquisition skill's own package files, which follow the self-growth boundaries below. Full loop mechanics live in `references/repair-loop.md`.
 
 Work in bounded cycles. One cycle: classify the failure, apply the single narrowest fix for one distinct failing check, re-run what the class prescribes plus the regression reruns required by `references/testing-protocol.md`, append one learning entry to the external learnings store, then re-assess.
 
@@ -225,6 +233,8 @@ Classify before editing:
 Budget: at most **three repair cycles per distinct failing check**; the fourth failure of the same check stops the loop. Do not endlessly polish. Stop with success only when the reliability threshold in `references/testing-protocol.md` is met. Stop and escalate to the user when a check exhausts its budget, when patches oscillate (a fix reverting an earlier fix, or two checks alternately breaking), or when failures expose a fundamental mismatch rather than a fixable skill defect — then reject the untrusted candidate or block the curated use and surface the evidence instead of lowering the bar. Escalation states the failing checks, each attempt and its result, truthful current statuses, the learnings appended, and the user's options.
 
 No repair activity upgrades any status implicitly. Resource verification and `skill_validation` each move only when their own gate actually re-executes and passes; a patch moves affected behavioral status down until reruns restore it.
+
+A confirmed post-adoption defect marks every affected `host_adoptions` entry `blocked` and invalidates affected behavioral and catalog-routing passes before repair. Restoring `operational` requires the regression suite, catalog validation, an authorized update of the host copy, and a fresh explicit host-activation pass. Follow `references/operational-lifecycle.md`.
 
 ## 8. Record trust and verification separately
 
@@ -268,7 +278,7 @@ For untrusted discoveries, record enough information to avoid wasteful rediscove
 
 For curated resources, do not silently delete, de-trust, or retarget the entry when a test fails. Record the affected version/use as failed or blocked, warn the user/project, and leave catalog membership/canonical identity unchanged until explicitly modified.
 
-Use `templates/resource-record.yaml` for a portable evidence record when the environment has no registry format of its own. Carry the curated `slug`, `canonical_url`, and `package_id` into that record so evidence cannot drift onto a same-named resource. A record whose trust basis is `verified-acquisition` requires executed/passing applicable resource proof, generated-skill structural validation, executed/passing independent generated-skill behavioral validation, provenance, and no material unavailable claims. A record whose trust basis is `curated` does not require those gates to be trusted, but every verification field must still be truthful. Whenever this workflow writes or updates a portable resource record, run `scripts/validate_resource_record.py <resource-record.yaml>` when Python is available. Its PASS establishes only structural/state consistency; it does not prove the recorded evidence is true.
+Use the mandatory schema-version 2 `templates/resource-record.yaml` for a portable evidence record when the environment has no registry format of its own. Carry the curated `slug`, `canonical_url`, and `package_id` into that record so evidence cannot drift onto a same-named resource. Record installed/parent reconciliation separately from upstream verification, and record artifact state separately from each host adoption. An empty `host_adoptions` list means artifact only; `operational` requires every host-applicable evidence facet plus explicit activation. Legacy children and records fail the current contract and enter `repair/reconcile`; never synthesize missing lifecycle evidence. A record whose trust basis is `verified-acquisition` requires executed/passing applicable resource proof, generated-skill structural validation, executed/passing independent generated-skill behavioral validation, provenance, and no material unavailable claims. A record whose trust basis is `curated` does not require those gates to be trusted, but every verification field must still be truthful. Whenever this workflow writes or updates a portable resource record, run `scripts/validate_resource_record.py <resource-record.yaml>` when Python is available. Its PASS establishes only structural/state consistency; it does not prove the recorded evidence is true. Record discovery, reconciliation, host evidence, authorization, and state transitions per `references/operational-lifecycle.md`.
 
 ## Self-growth boundaries
 
@@ -313,6 +323,9 @@ Report:
 - verification performed and result (or explicitly unverified/unavailable);
 - generated skill location/name;
 - skill validation performed and result;
+- reconciliation status and any blocked use/version;
+- artifact-only versus per-host adoption state, with the evidence supporting `operational` when claimed;
+- catalog fingerprint, static result, and independent routing result when applicable;
 - important limitations/version pin;
 - learning entries appended to the external store during the run, when any;
 - rejected alternatives only when their rejection materially explains the decision.
@@ -320,3 +333,4 @@ Report:
 Do not bundle user/project curated registry data, research transcripts, caches, temporary test fixtures, or unrelated artifacts into a generated runtime skill package. Keep only the instructions, references, templates, and helper scripts the skill actually needs.
 
 If no usable curated resource exists and no discovered candidate clears the required acquisition gates, say so and implement locally or return the unresolved need instead of manufacturing a recommendation.
+

@@ -19,6 +19,15 @@ Use **RESOURCE NAME** for CAPABILITY. Guidance targets **VERSION/COMMIT/STATE** 
 
 1. ...
 
+## Operational reconciliation
+
+- Policy: REQUIRED/NOT-APPLICABLE — REASON
+- Installed-state check: RESOURCE-SPECIFIC CHECK OR IMMUTABLE-INSTALL EXPLANATION
+- Expected identity/state: RESOURCE SLUG + CANONICAL URL + PACKAGE ID WHEN APPLICABLE + REVIEWED VERSION/COMMIT/STATE
+- Parent-state check: Load matching schema-version 2 resource records and resource-bound learnings by resource slug plus canonical identity.
+- Mismatch/unknown action: Stop the affected version-sensitive use and invoke `roblox-resource-acquisition` in `repair/reconcile` mode.
+- Defect handoff: Capture the task, installed state, expected and observed behavior, and smallest reproduction; then invoke `roblox-resource-acquisition` in `repair/reconcile` mode.
+
 ## Common path
 
 Provide the shortest source-grounded setup/use sequence. Do not call it runtime-verified unless the recorded resource verification status is `verified`.
@@ -73,6 +82,8 @@ Compare against the closest Roblox built-in or credible alternative. If none is 
 
 ## Provenance
 
+- Resource slug: RESOURCE-SLUG
+- Package identity: PACKAGE-ID (or explicitly state that the resource has no package identity)
 - DevForum: HTTPS URL (or explicitly state that no DevForum topic is used/applicable)
 - Canonical source/docs: HTTPS URL (or explicitly state that no separate canonical source exists when the DevForum topic above is the canonical source)
 - Source version/release/commit: IDENTIFIER (immutable version/commit, an explicitly labeled named tag/release/build, or a dated explicit source state; not bare latest/current/main/HEAD)
@@ -82,3 +93,4 @@ Compare against the closest Roblox built-in or credible alternative. If none is 
 ## Version drift
 
 Before using newer upstream versions, check release notes/source for changes affecting the APIs and behavior documented above. Re-review material changes before updating this skill's source state, and rerun runtime proof when the claimed verification status would otherwise become stale.
+
