@@ -26,6 +26,46 @@ class ResourceRecordTests(unittest.TestCase):
         errors, _ = self.validate(fixtures.valid_record())
         self.assertEqual(errors, [])
 
+    def test_direct_evaluation_target_preserves_provenance_without_trust(self) -> None:
+        record = fixtures.valid_record()
+        record["discovery_origin"] = "other"
+        record["selection_reason"] = "User directly targeted this canonical resource for evaluation only."
+        record["trust"] = {"level": "untrusted", "basis": "", "reason": ""}
+        errors, _ = self.validate(record)
+        self.assertEqual(errors, [])
+
+        record["selection_reason"] = ""
+        errors, _ = self.validate(record)
+        self.assertIn(
+            "discovery_origin other requires selection_reason to preserve selection provenance",
+            errors,
+        )
+
+    def test_direct_use_target_can_record_explicit_user_trust_separately(self) -> None:
+        record = fixtures.valid_record()
+        record["discovery_origin"] = "other"
+        record["selection_reason"] = "User directly selected this canonical resource for current-task use."
+        record["trust"] = {
+            "level": "trusted",
+            "basis": "explicit-user",
+            "reason": "The user directed use of the established canonical identity.",
+        }
+        errors, _ = self.validate(record)
+        self.assertEqual(errors, [])
+
+        record["slug"] = ""
+        record["canonical_url"] = ""
+        record["package_id"] = ""
+        errors, _ = self.validate(record)
+        self.assertIn(
+            "trust.basis explicit-user requires slug to bind trust to a stable identity",
+            errors,
+        )
+        self.assertIn(
+            "trust.basis explicit-user requires canonical_url or package_id to bind trust to canonical identity",
+            errors,
+        )
+
     def test_operational_adoption_requires_every_facet(self) -> None:
         record = fixtures.valid_record()
         record["host_adoptions"] = [fixtures.operational_adoption()]

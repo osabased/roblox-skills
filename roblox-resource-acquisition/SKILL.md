@@ -15,14 +15,14 @@ Do not turn the first plausible DevForum result into a skill.
 
 Use this sequence:
 
-**need -> check built-ins/project -> consult trusted curated registry -> use if fit or discover if needed -> understand -> verify when required -> generate skill -> validate artifact -> adopt operationally, cache, or reject -> reconcile and repair**
+**need + requested scope -> classify positive resource targets versus a capability need -> inspect the targeted resource directly, or check relevant built-ins/project capabilities before registry/discovery -> understand -> verify when required -> generate skill only when in scope -> validate artifact -> adopt operationally, cache, or reject -> reconcile and repair**
 
 Curation is an explicit trust decision by the user/project. **Trusted does not mean verified.** A curated resource may be used without re-proving the library from scratch, but volatile integration facts still need refreshing and a generated skill still has its own validation burden. Likewise, a resource passing its own tests does not prove that an agent can use it correctly.
 
 Choose the narrowest operating mode that satisfies the request:
 
 - **evaluate/compare** — stop after the requested evidence and decision; do not generate a skill as extra scope;
-- **acquire/adopt** — produce and validate the generated child artifact, then run the separate authorized host-adoption gate when operational adoption is requested;
+- **acquire/adopt** — qualify and integrate the resource only to the requested project scope; generate a reusable child only when that guidance is in scope, then run the separate authorized host-adoption gate only when operational adoption is requested;
 - **refresh** — for an existing resource skill, confirm canonical identity, re-check only the source/version surfaces that can have drifted, patch the skill, then rerun structural and affected behavioral tests. Do not restart broad discovery unless the current resource is materially unsuitable or alternatives were requested.
 - **repair/reconcile** — use for a defect found during ordinary use, an installed/source-state mismatch, a current matching block or adverse observation, or legacy child/record state. Reconcile identity and project/host state, enter the existing repair classification, rerun invalidated gates, and re-adopt only with authorization.
 
@@ -31,6 +31,8 @@ Choose the narrowest operating mode that satisfies the request:
 Before searching, derive a compact acquisition brief from the current task:
 
 - capability actually needed;
+- each named resource's intended role and selector, if any;
+- requested lifecycle scope: evaluation/comparison, current-task use, project acquisition/adoption, reusable child guidance, or host adoption;
 - project/runtime constraints;
 - client/server boundary involved;
 - performance or scale requirements that materially matter;
@@ -40,17 +42,43 @@ Before searching, derive a compact acquisition brief from the current task:
 
 Consult the external learnings store (`references/learnings-store.md`) while deriving the brief. Recorded environment blockers shape which verification route the brief can realistically plan for; recorded gotchas and rejections set expectations early. A learning is a past observation, not current proof — it informs the brief and never decides acquisition by itself.
 
-Do **not** acquire a dependency when:
+For a capability-directed request with no positive resource target, do **not** acquire a dependency when:
 
 - Roblox built-ins already solve the need cleanly;
-- an already-trusted project dependency or installed skill covers it adequately;
+- an adequate project capability is authorized under the applicable policy;
 - the task is trivial enough that adding a dependency increases complexity;
 - the user/project explicitly forbids third-party dependencies;
 - the resource solves a more general problem but is a worse fit than a small local implementation.
 
 Search is a means, not the goal.
 
+### Positively targeted resources
+
+When the user positively targets one or more resources, preserve the role, ordering, and scope assigned to each identity. Evaluation, comparison, use, replacement, conjunction, ordered preference, fallback, and role-specific selection are different intents. A negative constraint, descriptive/incidental mention, analogy, or resource named only as the source being replaced is not automatically a positive target. Treat a negative constraint as an exclusion from selection/use unless the user changes it; inspect that resource only when another task-relevant rule requires its current state, such as safe removal or replacement.
+
+For each positive target:
+
+1. Resolve its canonical identity only as far as the decision needs. Preserve a material version, tag, commit, release, package coordinate, or other selector. Do not transfer identity, trust, verification, or guidance to a same-named fork, mirror, re-upload, modified vendored copy, or different selector.
+2. Inspect the targeted resource directly. Identity-resolution research answers which resource the user meant; it does not become alternative discovery.
+3. Inspect relevant project/installed state only when use, integration, adoption, reconciliation, compatibility, or another requested decision depends on it. Pure source evaluation does not trigger project reconnaissance merely because a project is open. When the same canonical resource is already present, reconcile material identity/version/operational state instead of reacquiring it.
+4. Preserve the narrowest authority actually granted. Evaluation or comparison selects candidates but grants no trust or mutation authority. A clear direction to use/adopt an established canonical identity may supply the existing `explicit-user` trust basis, but authorizes no lifecycle action beyond what that assigned use/adoption scope entails and never bypasses project/runtime/security policy. A request for reusable child guidance places generation in scope but does not independently prove or trust the upstream resource; host adoption remains separate.
+5. Continue through only the understanding, qualification, verification, generation, validation, and adoption stages required by that resource's assigned scope.
+
+Skip registry lookup and broad discovery merely to rediscover, compete with, or substitute for a positive target. Seek alternatives only when requested or when current evidence establishes a material fit, compatibility, safety, availability, or policy problem and the task calls for another solution. Surface such a conflict before substitution. An explicit replacement target is not defeated merely because the old resource is already present.
+
+### Capability-directed project reconnaissance
+
+When no resource has been positively selected for the need, inspect only project surfaces plausibly relevant to that capability before registry lookup or discovery. Useful surfaces can include manifests/lockfiles, package directories, imports/requires, nearby implementation and configuration, project documentation, first-party/internal abstractions, and applicable dependency/trust policy. Generated children, resource records, manifest declarations, and historical learnings are leads; reconcile current installed/operational state when that distinction is material.
+
+Investigate an unfamiliar dependency only when available evidence reasonably connects it to the need. Establish just enough of its actual identity, direct versus transitive status, capability/API, current project usage, lifecycle, client/server implications, material constraints, installed state, and approval basis to decide whether it already solves the need. Familiar upstream naming does not establish that a local fork or vendored copy is the same resource.
+
+Classify relevant existing capabilities without collapsing technical fit into authority: adequate and authorized; adequate but untrusted/trust-unknown; inadequate; irrelevant; or transitive-only. Mere presence, technical adequacy, or transitive installation grants no approval. Conversely, unfamiliarity or unresolved trust is a reason to use the existing qualification/trust path, not evidence of absence or a reason to install a competitor immediately.
+
+Prefer an adequate authorized project dependency or first-party capability. If several qualify, use project conventions, nearby usage, and task fit; when evidence cannot justify one, preserve the unresolved choice instead of adding a third resource or choosing by familiarity. Stop reconnaissance once the acquisition decision is supported. If relevant capability is cheaply shown absent, continue without auditing the complete dependency graph.
+
 ## 1. Consult the external trusted-curated registry, then discover if needed
+
+Enter this section for a capability-directed request only when built-ins and relevant project capabilities do not resolve the need under applicable policy, or when the targeted-resource path independently justifies alternatives. A positive target otherwise proceeds directly to qualification and understanding.
 
 Curated resource state is **user/project-owned data and must live outside this skill package**. Follow `references/curated-registry.md` for registry discovery, precedence, and mutation rules. The skill ships only the registry contract and `templates/curated-resource.yaml`; it must not ship the user's actual resource choices.
 
@@ -78,7 +106,7 @@ Build a shortlist of reasonable alternatives when alternatives exist. Usually co
 For each serious candidate, record:
 
 - resource name, stable slug when known, and exact capability;
-- discovery origin (`curated`, `project`, `devforum`, or other);
+- selection/discovery origin (`curated`, `project`, `devforum`, or `other`) and the actual selection reason;
 - trust level and trust basis;
 - DevForum thread URL when applicable;
 - canonical source/docs URL when available, plus exact package identity when applicable;
@@ -92,9 +120,11 @@ For each serious candidate, record:
 
 Use `references/evaluation-rubric.md` to compare **newly discovered** candidates and to choose among multiple curated resources when task fit is genuinely ambiguous. Do not downgrade a curated resource merely because an untrusted alternative scores slightly higher on generic qualities; curation is a policy preference unless task-specific evidence makes the curated choice unsuitable.
 
-## 2. Qualify newly discovered candidates; sanity-check curated ones
+## 2. Qualify candidates according to actual trust
 
-For **newly discovered, untrusted** candidates, reject or heavily penalize a candidate when evidence shows any of the following:
+Apply the untrusted or trusted path according to the resource's actual trust basis, regardless of how it entered consideration. Project presence and positive targeting alone grant no trust. Explicit project approval may supply `project` trust; a user direction that actually authorizes use/adoption may supply `explicit-user` trust after canonical identity is established. Evaluation, comparison, and reusable-child scope alone do not. Resolve conflicts with applicable project policy through its existing authority rules; no trust basis bypasses unrelated installation, runtime, security, or host-adoption constraints.
+
+For **untrusted** candidates, whether discovered, project-present, or directly targeted, reject or heavily penalize a candidate when evidence shows any of the following:
 
 - it does not actually satisfy the acquisition brief;
 - source or behavior needed for safe evaluation cannot be inspected;
@@ -109,7 +139,7 @@ For **newly discovered, untrusted** candidates, reject or heavily penalize a can
 
 Absence of evidence is not positive evidence. Mark uncertain facts as unknown and test or investigate them.
 
-For a **curated/trusted** resource, first confirm that the source/package being considered matches the curated canonical identity. A same-named fork, mirror, re-upload, or alternate package does not inherit trust automatically. After identity matches, qualification checks become contradiction checks rather than a requirement to earn trust from zero. Trust does not require repeated proof, but direct evidence of task-specific incompatibility, deprecation, unsafe behavior, or a broken current API must not be ignored. Do not silently remove the resource from the user's registry; report the contradiction and avoid the affected use/version until the user changes the trust policy or the issue is resolved.
+For a **trusted** resource, first confirm that the source/package being considered matches the identity and scope to which that trust applies. A same-named fork, mirror, re-upload, modified vendored copy, alternate package, or different material selector does not inherit trust automatically. After identity matches, qualification checks become contradiction checks rather than a requirement to earn trust from zero. Trust does not require repeated proof, but direct evidence of task-specific incompatibility, deprecation, unsafe behavior, or a broken current API must not be ignored. Preserve the declared trust basis while reporting and blocking the affected use/version under its applicable policy; do not silently retarget or substitute the resource.
 
 Resource-bound learnings pre-load qualification: a recorded integration gotcha or version-drift note names the cheapest fact to falsify first against the current version. The learning directs where to look; only the current check decides. Match learnings by `slug` plus canonical identity, never by display name.
 
@@ -139,9 +169,9 @@ If the resource is too large, inspect the smallest source surface necessary to s
 
 ## 4. Verify the resource when required
 
-For a newly discovered resource, create the smallest isolated test that can falsify the resource's important claims before the workflow itself establishes trust.
+For an untrusted resource, create the smallest isolated test that can falsify the resource's important claims before the workflow itself establishes verified-acquisition trust.
 
-For a curated resource, runtime proof is **not required to preserve or exercise its trusted status**. Run focused verification when it is cheap, when the task is sensitive to runtime behavior, when current-source evidence is ambiguous, or when you want to record the resource/version as independently verified. Never claim a curated resource is verified merely because it is trusted.
+For a resource already trusted through `curated`, `project`, or `explicit-user`, runtime proof is **not required merely to preserve that trust**. Run focused verification when it is cheap, when the task is sensitive to runtime behavior, when current-source evidence is ambiguous, or when you want to record the resource/version as independently verified. Never claim a resource is verified merely because it is trusted.
 
 Prefer executable evidence in this order when available:
 
@@ -153,7 +183,7 @@ Prefer executable evidence in this order when available:
 
 Treat Open Cloud Luau Execution as mutation-capable. Headless tasks can invoke cloud-backed engine APIs such as DataStores, and supported execution paths can save place changes; current execution limits and persistence behavior should be re-checked in Creator Hub before relying on them. Do not assume a proof is read-only. It is not a substitute for Studio/MCP when the proof depends on physics simulation or automatic `Script`/`LocalScript` execution. Default to a disposable/test place or universe and non-production cloud data. Do not call DataStores, persistence APIs, or place-save operations during proof unless the required behavior needs them and the target is explicitly safe for mutation.
 
-Never label an unexecuted check as a passing runtime test. If an applicable claim requires runtime execution and no compatible execution environment is available, resource verification is **unavailable**, not passed. For an untrusted discovered resource, this prevents automatic trust promotion when the unknown is material. For a curated resource, trust remains user/project-granted, but verification must remain explicitly unavailable/unverified.
+Never label an unexecuted check as a passing runtime test. If an applicable claim requires runtime execution and no compatible execution environment is available, resource verification is **unavailable**, not passed. For an untrusted resource, this prevents automatic trust promotion when the unknown is material. For a policy-trusted resource, trust remains granted by its recorded basis, but verification must remain explicitly unavailable/unverified.
 
 Test only what matters, but cover applicable categories:
 
@@ -165,13 +195,15 @@ Test only what matters, but cover applicable categories:
 - one meaningful edge or failure case;
 - compatibility with the project's actual conventions.
 
-If a test exposes an intrinsic defect in an untrusted candidate, reject it and return to discovery. If it exposes a defect in a curated resource, mark the affected verification as failed/blocked, report it, and do not silently revoke catalog trust. If the failure is caused by misunderstanding, correct the model and rerun. Do not modify third-party source merely to force a pass unless the task explicitly calls for maintaining a fork.
+If a test exposes an intrinsic defect in an untrusted candidate, reject it and return to discovery only when alternatives are in scope. If it exposes a defect in a trusted resource, mark the affected verification/use as failed or blocked, report it, and do not silently rewrite its trust basis. If the failure is caused by misunderstanding, correct the model and rerun. Do not modify third-party source merely to force a pass unless the task explicitly calls for maintaining a fork.
 
 ## 5. Generate the resource skill when adoption/reuse is in scope
 
 If the user asked only to evaluate, compare, or inspect a resource and the current task does not require adopting it as reusable agent guidance, stop after the requested evaluation/verification result instead of creating a skill as extra scope.
 
-For acquisition/adoption work, create a dedicated reusable skill for a newly discovered resource only after the required resource verification passes. For a curated/trusted resource, you may generate the skill after current-source understanding is sufficient even when runtime verification is unavailable, because trust comes from the user's curation rather than from this workflow. In either case, use `templates/resource-skill-template.md` and `references/resource-skill-contract.md`.
+When reusable child generation is in scope, an untrusted resource — whether discovered, already project-present, or directly targeted — may receive a dedicated reusable skill only after the required resource verification passes. A resource trusted through `curated`, `project`, or `explicit-user` may receive one after current-source understanding is sufficient even when runtime verification is unavailable, because its trust came from policy rather than this workflow. In either case, use `templates/resource-skill-template.md` and `references/resource-skill-contract.md`.
+
+Use this same generation path for an adequate existing dependency or an explicitly targeted resource; do not create a parallel child mechanism. Generate only when reusable guidance is in scope and justified. Child creation or validation does not imply that this workflow installed the upstream resource, grant upstream trust, upgrade upstream verification, change selection provenance, or make either the resource or child operational. Host adoption remains a separate authorized gate.
 
 The generated skill must be operational guidance, not a copy of the DevForum post or README. It should teach an agent how to decide, install, use, verify, and troubleshoot the resource with minimal irrelevant context. Include the closest credible alternative or Roblox built-in when relevant; if none is meaningful, say why. Always retain a `Security notes` section: document applicable resource-specific trust boundaries, or explicitly state when there are no special ones beyond normal Roblox server-authoritative expectations.
 
@@ -223,14 +255,14 @@ Work in bounded cycles. One cycle: classify the failure, apply the single narrow
 
 Classify before editing:
 
-- **resource failure (untrusted discovery)** -> reject the candidate; the next candidate enters section 2 fresh; record a `rejection` learning; that candidate's resource verification is recorded failed;
-- **resource failure (curated/trusted)** -> block the affected version/use and report the contradiction; record a `version-drift` or `integration-gotcha` learning; catalog membership, canonical identity, and trust stay untouched;
+- **resource failure (untrusted candidate)** -> reject the affected candidate; consider another only when alternatives are in scope; record a `rejection` learning; that candidate's resource verification is recorded failed;
+- **resource failure (trusted)** -> block the affected version/use and report the contradiction; record a `version-drift` or `integration-gotcha` learning; canonical identity and recorded trust stay untouched unless the controlling user/project policy changes them;
 - **understanding failure** -> correct the model from source/docs; re-run the resource proof the misunderstanding invalidated; record an `integration-gotcha` learning;
 - **skill instruction failure** -> patch only the instructions responsible; re-run the failed check plus every previously passing applicable check; record a `repair-outcome` learning; the patch voids prior behavioral passes until those reruns complete;
 - **environment failure** -> fix or document the prerequisite and re-run the blocked check, or record it unavailable if unfixable; record an `environment-blocker` learning; never distort the skill around a broken environment;
 - **test failure** -> repair the invalid test, re-run it, and demonstrate the repaired test can still fail; record a `repair-outcome` learning; results produced by the invalid test are void.
 
-Budget: at most **three repair cycles per distinct failing check**; the fourth failure of the same check stops the loop. Do not endlessly polish. Stop with success only when the reliability threshold in `references/testing-protocol.md` is met. Stop and escalate to the user when a check exhausts its budget, when patches oscillate (a fix reverting an earlier fix, or two checks alternately breaking), or when failures expose a fundamental mismatch rather than a fixable skill defect — then reject the untrusted candidate or block the curated use and surface the evidence instead of lowering the bar. Escalation states the failing checks, each attempt and its result, truthful current statuses, the learnings appended, and the user's options.
+Budget: at most **three repair cycles per distinct failing check**; the fourth failure of the same check stops the loop. Do not endlessly polish. Stop with success only when the reliability threshold in `references/testing-protocol.md` is met. Stop and escalate to the user when a check exhausts its budget, when patches oscillate (a fix reverting an earlier fix, or two checks alternately breaking), or when failures expose a fundamental mismatch rather than a fixable skill defect — then reject the untrusted candidate or block the trusted use and surface the evidence instead of lowering the bar. Escalation states the failing checks, each attempt and its result, truthful current statuses, the learnings appended, and the user's options.
 
 No repair activity upgrades any status implicitly. Resource verification and `skill_validation` each move only when their own gate actually re-executes and passes; a patch moves affected behavioral status down until reruns restore it.
 
@@ -245,9 +277,9 @@ Do not overload one status word with two meanings. Track **trust** (who/what aut
 For resources this workflow actively acquires, trust normally comes from:
 
 - **curated** — valid explicit user/project catalog membership. Trust is immediate for the canonical identity named by the entry and does not require this workflow to re-prove the library;
-- **verified-acquisition** — a previously untrusted discovered resource completed all applicable resource-proof and generated-skill behavioral gates required for normal adoption.
+- **verified-acquisition** — a previously untrusted candidate completed all applicable resource-proof and generated-skill behavioral gates required for normal adoption.
 
-An already-installed/project-approved dependency may also arrive with inherited `project` or `explicit-user` trust. Preserve that declared basis rather than pretending this workflow established it. A resource with no declared trust basis remains untrusted candidate/cache research.
+An explicitly project-approved dependency may arrive with inherited `project` trust. A user direction that authorizes use/adoption of the established canonical identity may supply `explicit-user` trust. Preserve the declared basis rather than pretending this workflow established it. Installation alone, transitive presence, evaluation/comparison targeting, or a child-generation request alone supplies no trust; without another valid basis the resource remains untrusted candidate/cache research.
 
 ### Verification
 
@@ -260,15 +292,15 @@ Record resource verification as one of:
 - **unavailable** — a material required execution check cannot be performed in the available environment;
 - **failed** — relevant executable proof failed or current evidence directly contradicts the intended use.
 
-Thus a resource can legitimately be **trusted + unverified** when it is curated. Never rewrite that as "verified." A newly discovered resource remains **untrusted + unverified** while proof is incomplete, with partial evidence recorded in `resource_proof`, until it completes enough gates for verified-acquisition trust.
+Thus a resource can legitimately be **trusted + unverified** through a policy trust basis. Never rewrite that as "verified." An untrusted resource remains **untrusted + unverified** while proof is incomplete, with partial evidence recorded in `resource_proof`, until it completes enough gates for verified-acquisition trust.
 
 ### Candidate/cache
 
-Keep discovered non-trusted research here when it may be useful later but has not earned verified-acquisition trust. Do not let candidate state masquerade as trusted guidance.
+Keep non-trusted candidate research here when it may be useful later but has not earned verified-acquisition trust. Do not let candidate state masquerade as trusted guidance.
 
 ### Rejected / blocked
 
-For untrusted discoveries, record enough information to avoid wasteful rediscovery:
+For untrusted candidates, record enough information to avoid wasteful repeat investigation:
 
 - resource and source URL;
 - validation date;
@@ -276,9 +308,9 @@ For untrusted discoveries, record enough information to avoid wasteful rediscove
 - concise reason;
 - evidence that would justify reconsideration.
 
-For curated resources, do not silently delete, de-trust, or retarget the entry when a test fails. Record the affected version/use as failed or blocked, warn the user/project, and leave catalog membership/canonical identity unchanged until explicitly modified.
+For trusted resources, record the affected version/use as failed or blocked without silently changing identity or trust. For curated resources specifically, leave catalog membership and canonical identity unchanged until explicitly modified.
 
-Use the mandatory schema-version 2 `templates/resource-record.yaml` for a portable evidence record when the environment has no registry format of its own. Carry the curated `slug`, `canonical_url`, and `package_id` into that record so evidence cannot drift onto a same-named resource. Record installed/parent reconciliation separately from upstream verification, and record artifact state separately from each host adoption. An empty `host_adoptions` list means artifact only; `operational` requires every host-applicable evidence facet plus explicit activation. Legacy children and records fail the current contract and enter `repair/reconcile`; never synthesize missing lifecycle evidence. A record whose trust basis is `verified-acquisition` requires executed/passing applicable resource proof, generated-skill structural validation, executed/passing independent generated-skill behavioral validation, provenance, and no material unavailable claims. A record whose trust basis is `curated` does not require those gates to be trusted, but every verification field must still be truthful. Whenever this workflow writes or updates a portable resource record, run `scripts/validate_resource_record.py <resource-record.yaml>` when Python is available. Its PASS establishes only structural/state consistency; it does not prove the recorded evidence is true. Record discovery, reconciliation, host evidence, authorization, and state transitions per `references/operational-lifecycle.md`.
+Use the mandatory schema-version 2 `templates/resource-record.yaml` for a portable evidence record when the environment has no registry format of its own. The existing record model separates selection provenance from trust: use `discovery_origin: other` for a direct user target and state its exact role/scope in `selection_reason`; use `project` only for a capability found through project reconnaissance. Neither value determines `trust.basis`. Carry the established `slug`, `canonical_url`, `package_id`, and material selector/version into the record so evidence cannot drift onto a same-named or differently selected resource. Record installed/parent reconciliation separately from upstream verification, and record artifact state separately from each host adoption. An empty `host_adoptions` list means artifact only; `operational` requires every host-applicable evidence facet plus explicit activation. Legacy children and records fail the current contract and enter `repair/reconcile`; never synthesize missing lifecycle evidence. A record whose trust basis is `verified-acquisition` requires executed/passing applicable resource proof, generated-skill structural validation, executed/passing independent generated-skill behavioral validation, provenance, and no material unavailable claims. A record whose trust basis is `curated` does not require those gates to be trusted, but every verification field must still be truthful. Whenever this workflow writes or updates a portable resource record, run `scripts/validate_resource_record.py <resource-record.yaml>` when Python is available. Its PASS establishes only structural/state consistency; it does not prove the recorded evidence is true. Record discovery, reconciliation, host evidence, authorization, and state transitions per `references/operational-lifecycle.md`.
 
 ## Self-growth boundaries
 
@@ -332,5 +364,5 @@ Report:
 
 Do not bundle user/project curated registry data, research transcripts, caches, temporary test fixtures, or unrelated artifacts into a generated runtime skill package. Keep only the instructions, references, templates, and helper scripts the skill actually needs.
 
-If no usable curated resource exists and no discovered candidate clears the required acquisition gates, say so and implement locally or return the unresolved need instead of manufacturing a recommendation.
+If no permitted existing or targeted resource resolves the need and no curated/discovered candidate clears the required acquisition gates, say so and implement locally or return the unresolved need instead of manufacturing a recommendation.
 

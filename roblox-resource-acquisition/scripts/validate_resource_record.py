@@ -244,6 +244,10 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
     if isinstance(origin, str) and origin not in ALLOWED_ORIGINS:
         errors.append(f"discovery_origin must be one of: {', '.join(sorted(ALLOWED_ORIGINS))}")
 
+    selection_reason = data.get("selection_reason")
+    if origin == "other" and not nonempty_string(selection_reason):
+        errors.append("discovery_origin other requires selection_reason to preserve selection provenance")
+
     trust_level = dotted_get(data, "trust.level")
     trust_basis = dotted_get(data, "trust.basis")
     trust_reason = dotted_get(data, "trust.reason")
@@ -262,6 +266,12 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
         errors.append("trust.basis curated requires discovery_origin: curated")
     if trust_basis == "verified-acquisition" and origin == "curated":
         errors.append("verified-acquisition is for previously untrusted discovery, not curated-origin records")
+
+    if trust_basis == "explicit-user":
+        if not nonempty_string(slug):
+            errors.append("trust.basis explicit-user requires slug to bind trust to a stable identity")
+        if not nonempty_string(data.get("canonical_url")) and not nonempty_string(data.get("package_id")):
+            errors.append("trust.basis explicit-user requires canonical_url or package_id to bind trust to canonical identity")
 
     canonical = data.get("canonical_url")
     if isinstance(canonical, str) and canonical.strip():
