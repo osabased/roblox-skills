@@ -34,6 +34,23 @@ Ask what source/version the guidance targets and whether the upstream resource w
 
 Required when the resource touches remotes, HTTP, credentials, persistence, arbitrary assets/code, or other trust boundaries. Pass if the skill preserves Roblox's server-authoritative/security expectations and identifies special resource risks.
 
+## Test I - Operational reconciliation
+
+Use a project whose installed resource state is independently mutable when the child declares reconciliation `required`. Pass if the child detects the installed identity/version, compares it with its reviewed state, consults matching parent-maintained records/learnings, and stops the affected use on an unknown, mismatch, or current block. For `not-applicable`, pass only when the child gives a concrete immutable-install or version-insensitivity reason.
+
+Introduce a new ordinary-use instruction defect. Pass if the child captures the task, installed state, expected/observed behavior, and smallest reproduction, then activates `roblox-resource-acquisition` in `repair/reconcile` mode without silently continuing.
+
+## Test J - Catalog routing
+
+Run whenever the target host set contains two or more generated children. First run `scripts/validate_skill_catalog.py` and retain its fingerprint. For every reported overlap cluster, give independent agents:
+
+- one task specific to each child;
+- one task exercising the competing boundary;
+- one simpler task that should select neither child;
+- one explicit-invocation smoke task per child.
+
+Pass if the intended child is selected for each specific task, competing children stay out, the simpler task selects neither, explicit invocation succeeds, and the recorded fingerprint still matches the tested catalog. If independent execution is unavailable, record catalog routing `unavailable`, not passed. With fewer than two generated children, record it `not-applicable`.
+
 ## Regression rule
 
 After any repair patch, rerun:
@@ -53,6 +70,8 @@ Mark a generated resource skill behaviorally verified only when:
 - no applicable required test is recorded as unavailable;
 - generated-skill structural validator passes;
 - when a portable resource record is emitted, its resource-record structural/state validator passes;
+- operational reconciliation Test I passes when applicable;
+- catalog routing Test J passes when two or more generated children share the target host set;
 - no unsupported API statement remains;
 - no high-severity safety/integration defect remains;
 - runtime tests are labeled accurately;
@@ -60,3 +79,4 @@ Mark a generated resource skill behaviorally verified only when:
 - failures are not being hidden by weakening assertions.
 
 Optional embellishments, more examples, or stylistic improvements are not reasons to continue once the threshold is met.
+

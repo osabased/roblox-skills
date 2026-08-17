@@ -1,6 +1,16 @@
 # Generated-Skill Repair Loop
 
-This reference expands section 7 of SKILL.md. Its scope is the **generated resource skill and its validation evidence** — the outputs of sections 4–6. It never authorizes editing the `roblox-resource-acquisition` package itself; evidence that this package's own guidance is defective follows the self-growth boundaries in SKILL.md (stop, show the evidence, propose the exact diff, wait for an explicit yes).
+This reference expands section 7 of SKILL.md. Its scope is the **generated resource skill and its validation/adoption evidence**, including defects discovered during ordinary post-adoption use. It never authorizes editing the `roblox-resource-acquisition` package itself; evidence that this package's own guidance is defective follows the self-growth boundaries in SKILL.md (stop, show the evidence, propose the exact diff, wait for an explicit yes).
+
+## Post-adoption entry
+
+When ordinary use exposes a defect, installed/source-state mismatch, matching current block, or material adverse observation:
+
+1. Capture the task, host/project, installed identity/version, expected and observed behavior, and smallest reproduction.
+2. Match the child and external state by resource slug plus canonical identity.
+3. Mark every affected operational host adoption `blocked`.
+4. Reset affected behavioral and catalog-routing validation to an unpassed state.
+5. Classify and run the normal cycle below. Do not create a separate repair mechanism.
 
 ## The cycle
 
@@ -49,6 +59,7 @@ The resource behaves as understood; the generated skill teaches it wrong.
 - **Re-run:** the failed check first, then **every previously passing applicable check** per the testing-protocol regression rule.
 - **Record:** a `repair-outcome` learning — defect class, fix pattern, which check caught it.
 - **Status:** the patch voids the skill's prior behavioral pass. `skill_validation.independent_behavioral_passed` cannot remain true until the reruns complete and pass.
+- **Adoption:** affected host entries remain `blocked` until the repaired artifact is authorized for host update, the full regression/catalog checks pass, and explicit activation passes again.
 
 ### 5. Environment failure
 
@@ -105,8 +116,11 @@ No repair activity upgrades any status implicitly:
 - resource verification moves only when section 4 proof actually re-executes and passes;
 - structural skill validation moves only when `scripts/validate_skill.py` re-runs and passes;
 - behavioral skill validation moves only when independent behavioral execution re-runs and passes;
+- catalog routing moves only when the current catalog fingerprint's independent routing tests re-run and pass;
+- host adoption returns to `operational` only after authorized host update and explicit activation re-run;
 - a patch moves affected behavioral status **down** until reruns restore it.
 
 ## Learning emission
 
 Every repair cycle appends exactly one learning entry per `references/learnings-store.md`. If no store exists and one cannot be created, put the learning's content in the escalation or final report so it is not lost — never write it into this skill's package.
+

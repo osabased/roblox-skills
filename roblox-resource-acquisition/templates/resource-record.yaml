@@ -1,3 +1,5 @@
+schema_version: 2
+
 resource: ""
 slug: "" # stable curated/discovery identity when known
 discovery_origin: "" # curated | project | devforum | other
@@ -16,6 +18,16 @@ verification:
   status: unverified # unverified | unavailable | verified | failed
   validated_at: "" # set YYYY-MM-DD when verification is attempted/established
   version_or_commit: ""
+
+# Current project/resource state compared with the reviewed upstream state.
+reconciliation:
+  status: unknown # matched | mismatched | blocked | unknown | not-applicable
+  checked_at: "" # YYYY-MM-DD when a reconciliation check ran
+  installed_identity: ""
+  installed_version_or_commit: ""
+  detection_method: ""
+  parent_state_sources: [] # matching v2 records/learnings actually consulted
+  result: ""
 
 capability: ""
 devforum_url: "" # specific DevForum topic URL when applicable
@@ -36,8 +48,23 @@ skill_validation:
   independent_behavioral_passed: false
   environment: ""
   result: ""
+  catalog_routing_status: unverified # not-applicable | unverified | verified | unavailable | failed
+  catalog_fingerprint: "" # sha256:<64 lowercase hex characters>
+  catalog_environment: ""
+  catalog_result: ""
+
+# Empty means validated artifact only. Each entry uses:
+# host, scope (repo | user | admin | plugin | other), location,
+# status (installed | operational | blocked | disabled | removed | unavailable | failed),
+# checked_at, result, and an evidence mapping with:
+# installed (present | absent | not-applicable | unknown),
+# registered (present | absent | not-applicable | unknown),
+# discoverable ("yes" | "no" | unknown), enabled ("yes" | "no" | not-applicable | unknown),
+# explicit_activation (passed | failed | not-run | unavailable).
+host_adoptions: []
 
 limitations: []
 blocked_use_or_version: ""
 rejection_reason: ""
 reconsider_when: ""
+
