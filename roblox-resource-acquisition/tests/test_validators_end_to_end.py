@@ -1,8 +1,10 @@
-"""End-to-end CLI runs of all four validators against known-good/bad fixtures."""
+"""End-to-end CLI runs of all five validators against known-good/bad fixtures."""
+
 import subprocess
 import sys
 
 import fixtures
+import yaml
 
 
 def run_cli(scripts_dir, script, *args):
@@ -13,15 +15,35 @@ def run_cli(scripts_dir, script, *args):
     )
 
 
+def write_utf8(path, text):
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+def write_skill(root, *, name="roblox-widget-resource", description=None, use_when=None):
+    root.mkdir(parents=True, exist_ok=True)
+    write_utf8(
+        root / "SKILL.md",
+        fixtures.valid_skill_text(
+            name=name,
+            description=description
+            or "Use Widget Resource for synchronized widget replication with deterministic lifecycle cleanup.",
+            use_when=use_when
+            or "- Synchronizing replicated widget state across server-owned sessions.",
+        ),
+    )
+    return root
+
+
 def test_registry_valid(scripts_dir, tmp_path):
-    (tmp_path / "evaera-promise.yaml").write_text(fixtures.VALID_REGISTRY_ENTRY)
+    write_utf8(tmp_path / "evaera-promise.yaml", fixtures.VALID_REGISTRY_ENTRY)
     proc = run_cli(scripts_dir, "validate_curated_registry.py", tmp_path)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "PASS: curated registry structural/identity checks passed" in proc.stdout
 
 
 def test_registry_invalid_fails_for_seeded_defects(scripts_dir, tmp_path):
-    (tmp_path / "bad.yaml").write_text(fixtures.INVALID_REGISTRY_ENTRY)
+    write_utf8(tmp_path / "bad.yaml", fixtures.INVALID_REGISTRY_ENTRY)
     proc = run_cli(scripts_dir, "validate_curated_registry.py", tmp_path)
     assert proc.returncode == 1
     for fragment in (
@@ -35,22 +57,22 @@ def test_registry_invalid_fails_for_seeded_defects(scripts_dir, tmp_path):
 
 
 def test_registry_duplicate_slug_in_same_registry_fails(scripts_dir, tmp_path):
-    (tmp_path / "a.yaml").write_text(fixtures.VALID_REGISTRY_ENTRY)
-    (tmp_path / "b.yaml").write_text(fixtures.VALID_REGISTRY_ENTRY)
+    write_utf8(tmp_path / "a.yaml", fixtures.VALID_REGISTRY_ENTRY)
+    write_utf8(tmp_path / "b.yaml", fixtures.VALID_REGISTRY_ENTRY)
     proc = run_cli(scripts_dir, "validate_curated_registry.py", tmp_path)
     assert proc.returncode == 1
     assert "duplicate slug 'evaera-promise'" in proc.stdout
 
 
 def test_learnings_valid(scripts_dir, tmp_path):
-    (tmp_path / "2026-08-11-gotcha.yaml").write_text(fixtures.VALID_LEARNING)
+    write_utf8(tmp_path / "2026-08-11-gotcha.yaml", fixtures.VALID_LEARNING)
     proc = run_cli(scripts_dir, "validate_learnings_store.py", tmp_path)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "WARN" not in proc.stdout
 
 
 def test_learnings_invalid(scripts_dir, tmp_path):
-    (tmp_path / "2026-08-11-broken.yaml").write_text(fixtures.INVALID_LEARNING)
+    write_utf8(tmp_path / "2026-08-11-broken.yaml", fixtures.INVALID_LEARNING)
     proc = run_cli(scripts_dir, "validate_learnings_store.py", tmp_path)
     assert proc.returncode == 1
     assert "resource-scoped entries require a non-empty slug" in proc.stdout
@@ -58,7 +80,7 @@ def test_learnings_invalid(scripts_dir, tmp_path):
 
 
 def test_learnings_directive_warns_but_passes(scripts_dir, tmp_path):
-    (tmp_path / "2026-08-11-directive.yaml").write_text(fixtures.DIRECTIVE_LEARNING)
+    write_utf8(tmp_path / "2026-08-11-directive.yaml", fixtures.DIRECTIVE_LEARNING)
     proc = run_cli(scripts_dir, "validate_learnings_store.py", tmp_path)
     assert proc.returncode == 0
     assert "WARN" in proc.stdout
@@ -66,16 +88,21 @@ def test_learnings_directive_warns_but_passes(scripts_dir, tmp_path):
 
 
 def test_record_valid(scripts_dir, tmp_path):
-    record = tmp_path / "record.yaml"
-    record.write_text(fixtures.VALID_RECORD)
+    record = write_utf8(
+        tmp_path / "record.yaml",
+        yaml.safe_dump(fixtures.valid_record(), sort_keys=False),
+    )
     proc = run_cli(scripts_dir, "validate_resource_record.py", record)
     assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "PASS: resource-record structural/state checks passed" in proc.stdout
     assert "curation establishes trust, not runtime verification" in proc.stdout
 
 
-def test_record_invalid_fails_state_consistency(scripts_dir, tmp_path):
-    record = tmp_path / "record.yaml"
-    record.write_text(fixtures.INVALID_RECORD)
+def test_record_invalid_fails_only_for_seeded_state_defects(scripts_dir, tmp_path):
+    record = write_utf8(
+        tmp_path / "record.yaml",
+        yaml.safe_dump(fixtures.invalid_record(), sort_keys=False),
+    )
     proc = run_cli(scripts_dir, "validate_resource_record.py", record)
     assert proc.returncode == 1
     for fragment in (
@@ -84,19 +111,77 @@ def test_record_invalid_fails_state_consistency(scripts_dir, tmp_path):
         "independent_behavioral_passed cannot be true unless independent_behavioral_executed is true",
     ):
         assert fragment in proc.stdout, f"missing: {fragment}\n{proc.stdout}"
+    assert "missing required field" not in proc.stdout
+    assert "unknown field" not in proc.stdout
 
 
 def test_generated_skill_filled_passes(scripts_dir, tmp_path):
-    (tmp_path / "SKILL.md").write_text(fixtures.FILLED_SKILL)
+    write_skill(tmp_path)
     proc = run_cli(scripts_dir, "validate_skill.py", tmp_path)
     assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
 def test_generated_skill_unfilled_template_fails(scripts_dir, tmp_path):
-    template = (
-        scripts_dir.parent / "templates" / "resource-skill-template.md"
-    ).read_text()
-    (tmp_path / "SKILL.md").write_text(template)
+    template = (scripts_dir.parent / "templates" / "resource-skill-template.md").read_text(
+        encoding="utf-8"
+    )
+    write_utf8(tmp_path / "SKILL.md", template)
     proc = run_cli(scripts_dir, "validate_skill.py", tmp_path)
     assert proc.returncode == 1
     assert "unresolved template content" in proc.stdout
+
+
+def test_catalog_valid_cli_reports_fingerprint_and_count(scripts_dir, tmp_path):
+    skill = write_skill(tmp_path / "one")
+    proc = run_cli(scripts_dir, "validate_skill_catalog.py", "--host", "portable", skill)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "PASS: catalog structural checks passed" in proc.stdout
+    assert "CATALOG_FINGERPRINT: sha256:" in proc.stdout
+    assert "SKILLS: 1" in proc.stdout
+
+
+def test_catalog_duplicate_identity_cli_fails(scripts_dir, tmp_path):
+    first = write_skill(tmp_path / "first", name="roblox-duplicate-widget")
+    second = write_skill(
+        tmp_path / "second",
+        name="roblox-duplicate-widget",
+        description="Use Duplicate Widget for a distinct local rendering capability and cleanup flow.",
+        use_when="- Rendering decorative local widget particles for one player's camera.",
+    )
+    proc = run_cli(
+        scripts_dir,
+        "validate_skill_catalog.py",
+        "--host",
+        "portable",
+        first,
+        second,
+    )
+    assert proc.returncode == 1
+    assert "duplicate skill name" in proc.stdout
+    assert "FAIL" in proc.stdout
+
+
+def test_catalog_overlap_cli_passes_with_routing_warning(scripts_dir, tmp_path):
+    first = write_skill(
+        tmp_path / "first",
+        name="roblox-widget-one",
+        description="Use Widget One for synchronized replicated widget sessions and deterministic lifecycle cleanup.",
+        use_when="- Synchronizing replicated widget sessions with deterministic cleanup.",
+    )
+    second = write_skill(
+        tmp_path / "second",
+        name="roblox-widget-two",
+        description="Use Widget Two for synchronized replicated widget sessions and deterministic lifecycle cleanup.",
+        use_when="- Synchronizing replicated widget sessions with deterministic cleanup.",
+    )
+    proc = run_cli(
+        scripts_dir,
+        "validate_skill_catalog.py",
+        "--host",
+        "portable",
+        first,
+        second,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "OVERLAP:" in proc.stdout
+    assert "overlap clusters require independent catalog-routing tests" in proc.stdout

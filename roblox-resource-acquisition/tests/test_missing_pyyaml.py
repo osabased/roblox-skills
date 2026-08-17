@@ -10,12 +10,15 @@ SCRIPTS = [
     "validate_learnings_store.py",
     "validate_resource_record.py",
     "validate_skill.py",
+    "validate_skill_catalog.py",
 ]
 
 
 @pytest.fixture()
 def blocked_yaml_env(tmp_path):
-    (tmp_path / "yaml.py").write_text('raise ImportError("pyyaml blocked for testing")\n')
+    (tmp_path / "yaml.py").write_text(
+        'raise ImportError("pyyaml blocked for testing")\n', encoding="utf-8"
+    )
     env = os.environ.copy()
     env["PYTHONPATH"] = str(tmp_path)
     return env
@@ -24,7 +27,7 @@ def blocked_yaml_env(tmp_path):
 @pytest.mark.parametrize("script", SCRIPTS)
 def test_missing_pyyaml_exits_2_with_hint(scripts_dir, tmp_path, blocked_yaml_env, script):
     target = tmp_path / "input.yaml"
-    target.write_text("x: 1\n")
+    target.write_text("x: 1\n", encoding="utf-8")
     proc = subprocess.run(
         [sys.executable, str(scripts_dir / script), str(target)],
         capture_output=True,

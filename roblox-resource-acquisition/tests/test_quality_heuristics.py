@@ -1,4 +1,6 @@
 """Regression tests for small validator heuristics fixed during maintenance."""
+from pathlib import Path
+
 import fixtures
 
 
@@ -14,15 +16,11 @@ def test_pass_condition_still_rejects_generic_claims(skill_mod):
     assert skill_mod.is_concrete_pass_condition("verify successful operation") is False
 
 
-def test_verified_acquisition_missing_canonical_url_reported_once(record_mod, tmp_path):
+def test_verified_acquisition_missing_canonical_url_reported_once(record_mod):
     # An empty canonical_url used to be reported twice for verified-acquisition
     # records (required_nonempty loop plus a redundant trailing check).
-    text = fixtures.INVALID_RECORD.replace(
-        'canonical_url: "https://github.com/evaera/roblox-lua-promise"',
-        'canonical_url: ""',
-    )
-    path = tmp_path / "record.yaml"
-    path.write_text(text)
-    errors, _notes = record_mod.validate_record(path, record_mod.load_record(path))
+    record = fixtures.invalid_record()
+    record["canonical_url"] = ""
+    errors, _notes = record_mod.validate_record(Path("record.yaml"), record)
     canonical_errors = [e for e in errors if "canonical" in e]
     assert canonical_errors == ["verified-acquisition requires canonical_url"]

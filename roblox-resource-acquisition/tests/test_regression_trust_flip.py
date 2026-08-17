@@ -9,6 +9,7 @@ optional fields all validate identically.
 from pathlib import Path
 
 import fixtures
+import yaml
 
 BARE_PACKAGE_ID = fixtures.VALID_REGISTRY_ENTRY.replace(
     'package_id: "evaera/promise@4.0.0"', "package_id:"
@@ -20,7 +21,7 @@ EXPLICIT_EMPTY_PACKAGE_ID = fixtures.VALID_REGISTRY_ENTRY.replace(
 
 def _validate(registry_mod, tmp_path, text):
     path = tmp_path / "evaera-promise.yaml"
-    path.write_text(text)
+    path.write_text(text, encoding="utf-8")
     data = registry_mod.load_entry(path)
     errors, _notes = registry_mod.validate_entry(path, data)
     return data, errors
@@ -73,24 +74,38 @@ def test_bare_empty_required_list_still_fails(registry_mod, tmp_path):
 
 
 def test_record_bare_nested_empty_matches_template_spelling(record_mod, tmp_path):
-    import fixtures as fx
+    explicit = yaml.safe_dump(fixtures.valid_record(), sort_keys=False)
+    target = "  validated_at: ''"
+    assert target in explicit, "serialized fixture spelling changed"
+    bare = explicit.replace(target, "  validated_at:")
+    assert bare != explicit, "bare-value replacement did not apply"
 
-    bare = fx.VALID_RECORD.replace('  validated_at: ""', "  validated_at:")
-    path = tmp_path / "record.yaml"
-    path.write_text(bare)
-    data = record_mod.load_record(path)
-    errors, _notes = record_mod.validate_record(path, data)
-    assert errors == []
-    assert data["verification"]["validated_at"] == ""
+    results = []
+    for name, text in (("explicit.yaml", explicit), ("bare.yaml", bare)):
+        path = tmp_path / name
+        path.write_text(text, encoding="utf-8")
+        data = record_mod.load_record(path)
+        results.append((data, record_mod.validate_record(path, data)))
+
+    assert results[0] == results[1]
+    assert results[0][1][0] == []
+    assert results[0][0]["verification"]["validated_at"] == ""
 
 
 def test_record_bare_list_field_matches_template_spelling(record_mod, tmp_path):
-    import fixtures as fx
+    explicit = yaml.safe_dump(fixtures.valid_record(), sort_keys=False)
+    target = "  unavailable_claims: []"
+    assert target in explicit, "serialized fixture spelling changed"
+    bare = explicit.replace(target, "  unavailable_claims:")
+    assert bare != explicit, "bare-value replacement did not apply"
 
-    bare = fx.VALID_RECORD.replace("  unavailable_claims: []", "  unavailable_claims:")
-    path = tmp_path / "record.yaml"
-    path.write_text(bare)
-    data = record_mod.load_record(path)
-    errors, _notes = record_mod.validate_record(path, data)
-    assert errors == []
-    assert data["resource_proof"]["unavailable_claims"] == []
+    results = []
+    for name, text in (("explicit.yaml", explicit), ("bare.yaml", bare)):
+        path = tmp_path / name
+        path.write_text(text, encoding="utf-8")
+        data = record_mod.load_record(path)
+        results.append((data, record_mod.validate_record(path, data)))
+
+    assert results[0] == results[1]
+    assert results[0][1][0] == []
+    assert results[0][0]["resource_proof"]["unavailable_claims"] == []

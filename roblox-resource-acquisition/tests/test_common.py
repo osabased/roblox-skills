@@ -147,10 +147,10 @@ def test_immutable_version_evidence_rejects(common, value):
 # --- File collection -----------------------------------------------------------
 
 def test_collect_files(common, tmp_path):
-    (tmp_path / "a.yaml").write_text("x: 1\n")
-    (tmp_path / "b.yml").write_text("x: 1\n")
-    (tmp_path / ".hidden.yaml").write_text("x: 1\n")
-    (tmp_path / "notes.txt").write_text("ignored")
+    (tmp_path / "a.yaml").write_text("x: 1\n", encoding="utf-8")
+    (tmp_path / "b.yml").write_text("x: 1\n", encoding="utf-8")
+    (tmp_path / ".hidden.yaml").write_text("x: 1\n", encoding="utf-8")
+    (tmp_path / "notes.txt").write_text("ignored", encoding="utf-8")
     files = common.collect_files(tmp_path)
     assert [p.name for p in files] == ["a.yaml", "b.yml"]
     with pytest.raises(ValueError, match="expected .yaml or .yml"):

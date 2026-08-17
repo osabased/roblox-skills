@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import fixtures
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -18,186 +18,17 @@ from validate_skill import validate_skill
 from validate_skill_catalog import collect_skill_directories, validate_catalog
 
 
-def valid_record() -> dict:
-    return {
-        "schema_version": 2,
-        "resource": "Widget Resource",
-        "slug": "widget-resource",
-        "discovery_origin": "project",
-        "trust": {"level": "untrusted", "basis": "", "reason": ""},
-        "canonical_url": "https://example.com/widget",
-        "package_id": "com.example.widget",
-        "verification": {"status": "unverified", "validated_at": "", "version_or_commit": "1.2.3"},
-        "reconciliation": {
-            "status": "unknown",
-            "checked_at": "",
-            "installed_identity": "",
-            "installed_version_or_commit": "",
-            "detection_method": "",
-            "parent_state_sources": [],
-            "result": "",
-        },
-        "capability": "Synchronize widget state",
-        "devforum_url": "",
-        "selection_reason": "Project-selected test fixture",
-        "alternatives_considered": [],
-        "resource_proof": {
-            "executed": False,
-            "passed": False,
-            "environment": "",
-            "result": "",
-            "unavailable_claims": [],
-        },
-        "generated_skill": "roblox-widget-resource",
-        "skill_validation": {
-            "structural_passed": False,
-            "independent_behavioral_executed": False,
-            "independent_behavioral_passed": False,
-            "environment": "",
-            "result": "",
-            "catalog_routing_status": "unverified",
-            "catalog_fingerprint": "",
-            "catalog_environment": "",
-            "catalog_result": "",
-        },
-        "host_adoptions": [],
-        "limitations": [],
-        "blocked_use_or_version": "",
-        "rejection_reason": "",
-        "reconsider_when": "",
-    }
-
-
-def operational_adoption() -> dict:
-    return {
-        "host": "codex",
-        "scope": "repo",
-        "location": ".agents/skills/roblox-widget-resource/SKILL.md",
-        "status": "operational",
-        "checked_at": "2026-08-16",
-        "result": "Visible and explicitly invoked in isolated Codex profile",
-        "evidence": {
-            "installed": "present",
-            "registered": "not-applicable",
-            "discoverable": "yes",
-            "enabled": "yes",
-            "explicit_activation": "passed",
-        },
-    }
-
-
-def child_text(
-    name: str = "roblox-widget-resource",
-    description: str = "Use Widget Resource for synchronized widget replication with deterministic lifecycle cleanup.",
-    use_when: str = "- Synchronizing replicated widget state across server-owned sessions.",
-) -> str:
-    return f"""---
-name: {name}
-description: {description}
----
-
-# Widget Resource
-
-Use **Widget Resource** for synchronized widget state. Guidance targets **1.2.3** (source reviewed **2026-08-16**). Resource verification: **unverified**.
-
-## Use when
-
-{use_when}
-
-## Do not use when
-
-- A local table cleanly satisfies the small one-script task.
-
-## Prerequisites and installation
-
-1. Install package `com.example.widget` at version `1.2.3` under `ReplicatedStorage.Packages`.
-
-## Operational reconciliation
-
-- Policy: required — project package manifests can select a different materially version-sensitive release.
-- Installed-state check: Inspect the project package manifest and read the `com.example.widget` version before requiring the module.
-- Expected identity/state: widget-resource + https://example.com/widget + com.example.widget + 1.2.3.
-- Parent-state check: Load matching schema-version 2 resource records and resource-bound learnings by slug plus canonical identity.
-- Mismatch/unknown action: Stop the affected version-sensitive use and invoke `roblox-resource-acquisition` in `repair/reconcile` mode.
-- Defect handoff: Capture the task, installed state, expected behavior, observed behavior, and smallest reproduction; then invoke `roblox-resource-acquisition` in `repair/reconcile` mode.
-
-## Common path
-
-```luau
-local Widget = require(game.ReplicatedStorage.Packages.Widget)
-local session = Widget.new()
-session:Start()
-```
-
-## Client/server placement
-
-Create authoritative sessions on the server and validate every client request. Clients may observe replicated widget state but never choose authoritative values or invoke server-only lifecycle methods.
-
-## Mental model
-
-Each server-owned session publishes a replicated widget snapshot and owns cleanup for all connections created during its lifetime.
-
-## Lifecycle and cleanup
-
-- Initialization: Create one server-owned session after package loading completes.
-- Reuse: Reuse the session for related widget updates during its lifetime.
-- Cleanup/destruction: Call the documented destroy method when the owning system stops.
-
-## API used by this skill
-
-Use `Widget.new()`, `session:Start()`, and `session:Destroy()` for the documented lifecycle.
-
-## Failure modes
-
-### Widget never appears
-
-A missing package or wrong server placement causes initialization failure; inspect the manifest and move initialization to the server before retrying.
-
-## Limitations
-
-- Does not replace server-side validation of client-controlled widget requests.
-
-## Security notes
-
-Keep the server authoritative, validate client payloads before changing widget state, and pin the inspected package version.
-
-## Verify after installation
-
-Run: Execute `lune run tests/widget.luau` after installing the package.
-
-Pass condition: The command prints `widget-ready` and exits with code `0`.
-
-## Alternatives
-
-- Use a local server-owned table when replication and managed cleanup are unnecessary.
-
-## Provenance
-
-- Resource slug: widget-resource
-- Package identity: com.example.widget
-- DevForum: No DevForum topic is used/applicable
-- Canonical source/docs: https://example.com/widget
-- Source version/release/commit: 1.2.3
-- Source review date: 2026-08-16
-- Resource verification: unverified
-
-## Version drift
-
-Before using another version, compare its release source and API changes, then rerun the installation and lifecycle checks.
-"""
-
-
 class ResourceRecordTests(unittest.TestCase):
     def validate(self, record: dict) -> tuple[list[str], list[str]]:
         return validate_record(Path("record.yaml"), record)
 
     def test_artifact_only_v2_record_passes(self) -> None:
-        errors, _ = self.validate(valid_record())
+        errors, _ = self.validate(fixtures.valid_record())
         self.assertEqual(errors, [])
 
     def test_operational_adoption_requires_every_facet(self) -> None:
-        record = valid_record()
-        record["host_adoptions"] = [operational_adoption()]
+        record = fixtures.valid_record()
+        record["host_adoptions"] = [fixtures.operational_adoption()]
         errors, _ = self.validate(record)
         self.assertEqual(errors, [])
         record["host_adoptions"][0]["evidence"]["explicit_activation"] = "not-run"
@@ -210,8 +41,8 @@ class ResourceRecordTests(unittest.TestCase):
             ("disabled", "enabled", "no"),
             ("removed", "installed", "absent"),
         ):
-            record = valid_record()
-            adoption = operational_adoption()
+            record = fixtures.valid_record()
+            adoption = fixtures.operational_adoption()
             adoption["status"] = status
             adoption["evidence"][evidence_field] = evidence_value
             record["host_adoptions"] = [adoption]
@@ -219,7 +50,7 @@ class ResourceRecordTests(unittest.TestCase):
             self.assertEqual(errors, [], (status, errors))
 
     def test_reconciliation_mismatch_requires_observed_state(self) -> None:
-        record = valid_record()
+        record = fixtures.valid_record()
         record["reconciliation"].update(
             {
                 "status": "mismatched",
@@ -232,7 +63,7 @@ class ResourceRecordTests(unittest.TestCase):
         self.assertTrue(any("observed installed identity or version" in error for error in errors))
 
     def test_legacy_record_is_rejected(self) -> None:
-        record = valid_record()
+        record = fixtures.valid_record()
         del record["schema_version"]
         errors, _ = self.validate(record)
         self.assertTrue(any("legacy records must enter repair/reconcile" in error for error in errors))
@@ -240,7 +71,7 @@ class ResourceRecordTests(unittest.TestCase):
     def test_yaml_loader_rejects_legacy_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "legacy.yaml"
-            legacy = valid_record()
+            legacy = fixtures.valid_record()
             del legacy["schema_version"]
             path.write_text(yaml.safe_dump(legacy, sort_keys=False), encoding="utf-8")
             loaded = load_record(path)
@@ -250,11 +81,11 @@ class ResourceRecordTests(unittest.TestCase):
     def test_yaml_loader_normalizes_yes_no_host_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "operational.yaml"
-            record = valid_record()
-            record["host_adoptions"] = [operational_adoption()]
-            dumped = yaml.safe_dump(record, sort_keys=False).replace("discoverable: 'yes'", "discoverable: yes").replace(
-                "enabled: 'yes'", "enabled: yes"
-            )
+            record = fixtures.valid_record()
+            record["host_adoptions"] = [fixtures.operational_adoption()]
+            dumped = yaml.safe_dump(record, sort_keys=False).replace(
+                "discoverable: 'yes'", "discoverable: yes"
+            ).replace("enabled: 'yes'", "enabled: yes")
             path.write_text(dumped, encoding="utf-8")
             loaded = load_record(path)
             errors, _ = validate_record(path, loaded)
@@ -266,7 +97,8 @@ class GeneratedSkillTests(unittest.TestCase):
         skill = root / name
         skill.mkdir(parents=True)
         skill.joinpath("SKILL.md").write_text(
-            child_text(name=name, description=description, use_when=use_when), encoding="utf-8"
+            fixtures.valid_skill_text(name=name, description=description, use_when=use_when),
+            encoding="utf-8",
         )
         return skill
 
@@ -428,4 +260,3 @@ class GeneratedSkillTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
