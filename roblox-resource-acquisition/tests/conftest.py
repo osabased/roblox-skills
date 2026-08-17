@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS_DIR = REPO_ROOT / "roblox-resource-acquisition" / "scripts"
+SCRIPTS_DIR = REPO_ROOT / "scripts"
 
 # The scripts import `_common` as a sibling module; make that resolvable when
 # they are loaded from here rather than executed as files.

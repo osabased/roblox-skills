@@ -1,4 +1,6 @@
-"""Fixture documents used by the end-to-end validator tests."""
+"""Canonical fixture builders and documents for validator tests."""
+
+from copy import deepcopy
 
 VALID_REGISTRY_ENTRY = """\
 schema_version: 1
@@ -84,193 +86,201 @@ task_context: "CI validation of generated skills."
 related_entry: ""
 """
 
-VALID_RECORD = """\
-resource: Promise
-slug: evaera-promise
-discovery_origin: curated
+def valid_record() -> dict:
+    """Return a complete schema-version 2 curated resource record."""
+    return {
+        "schema_version": 2,
+        "resource": "Promise",
+        "slug": "evaera-promise",
+        "discovery_origin": "curated",
+        "trust": {
+            "level": "trusted",
+            "basis": "curated",
+            "reason": "Listed in the project curated registry as the standard async primitive.",
+        },
+        "canonical_url": "https://github.com/evaera/roblox-lua-promise",
+        "package_id": "evaera/promise@4.0.0",
+        "verification": {
+            "status": "unverified",
+            "validated_at": "",
+            "version_or_commit": "v4.0.0",
+        },
+        "reconciliation": {
+            "status": "unknown",
+            "checked_at": "",
+            "installed_identity": "",
+            "installed_version_or_commit": "",
+            "detection_method": "",
+            "parent_state_sources": [],
+            "result": "",
+        },
+        "capability": "promise-based async primitives for Luau",
+        "devforum_url": "https://devforum.roblox.com/t/promise-implementation-for-roblox/463825",
+        "selection_reason": "Best curated fit for coordinating async matchmaking operations.",
+        "alternatives_considered": [
+            "task.spawn with manual state flags: rejected, no cancellation semantics"
+        ],
+        "resource_proof": {
+            "executed": False,
+            "passed": False,
+            "environment": "",
+            "result": "",
+            "unavailable_claims": [],
+        },
+        "generated_skill": "roblox-evaera-promise",
+        "skill_validation": {
+            "structural_passed": False,
+            "independent_behavioral_executed": False,
+            "independent_behavioral_passed": False,
+            "environment": "",
+            "result": "",
+            "catalog_routing_status": "unverified",
+            "catalog_fingerprint": "",
+            "catalog_environment": "",
+            "catalog_result": "",
+        },
+        "host_adoptions": [],
+        "limitations": ["Guidance targets v4.0.0 only."],
+        "blocked_use_or_version": "",
+        "rejection_reason": "",
+        "reconsider_when": "",
+    }
 
-trust:
-  level: trusted
-  basis: curated
-  reason: "Listed in the project curated registry as the standard async primitive."
 
-canonical_url: "https://github.com/evaera/roblox-lua-promise"
-package_id: "evaera/promise@4.0.0"
+def invalid_record() -> dict:
+    """Derive a complete record containing only intentional state contradictions."""
+    record = deepcopy(valid_record())
+    record["trust"].update(
+        {
+            "basis": "verified-acquisition",
+            "reason": "Claims verified acquisition without any executed proof.",
+        }
+    )
+    record["verification"].update(
+        {"status": "verified", "validated_at": "", "version_or_commit": ""}
+    )
+    record["resource_proof"]["unavailable_claims"] = [
+        "runtime smoke test could not run"
+    ]
+    record["skill_validation"]["independent_behavioral_passed"] = True
+    return record
 
-verification:
-  status: unverified
-  validated_at: ""
-  version_or_commit: "v4.0.0"
 
-capability: "promise-based async primitives for Luau"
-devforum_url: "https://devforum.roblox.com/t/promise-implementation-for-roblox/463825"
-selection_reason: "Best curated fit for coordinating async matchmaking operations."
-alternatives_considered:
-  - "task.spawn with manual state flags: rejected, no cancellation semantics"
+def operational_adoption() -> dict:
+    return {
+        "host": "codex",
+        "scope": "repo",
+        "location": ".agents/skills/roblox-evaera-promise/SKILL.md",
+        "status": "operational",
+        "checked_at": "2026-08-16",
+        "result": "Visible and explicitly invoked in isolated Codex profile",
+        "evidence": {
+            "installed": "present",
+            "registered": "not-applicable",
+            "discoverable": "yes",
+            "enabled": "yes",
+            "explicit_activation": "passed",
+        },
+    }
 
-resource_proof:
-  executed: false
-  passed: false
-  environment: ""
-  result: ""
-  unavailable_claims: []
 
-generated_skill: "roblox-evaera-promise"
-skill_validation:
-  structural_passed: false
-  independent_behavioral_executed: false
-  independent_behavioral_passed: false
-  environment: ""
-  result: ""
-
-limitations:
-  - "Guidance targets v4.0.0 only."
-blocked_use_or_version: ""
-rejection_reason: ""
-reconsider_when: ""
-"""
-
-INVALID_RECORD = """\
-resource: Promise
-slug: evaera-promise
-discovery_origin: curated
-
-trust:
-  level: trusted
-  basis: verified-acquisition
-  reason: "Claims verified acquisition without any executed proof."
-
-canonical_url: "https://github.com/evaera/roblox-lua-promise"
-package_id: "evaera/promise@4.0.0"
-
-verification:
-  status: verified
-  validated_at: ""
-  version_or_commit: ""
-
-capability: "promise-based async primitives for Luau"
-devforum_url: ""
-selection_reason: ""
-alternatives_considered: []
-
-resource_proof:
-  executed: false
-  passed: false
-  environment: ""
-  result: ""
-  unavailable_claims:
-    - "runtime smoke test could not run"
-
-generated_skill: ""
-skill_validation:
-  structural_passed: false
-  independent_behavioral_executed: false
-  independent_behavioral_passed: true
-  environment: ""
-  result: ""
-
-limitations: []
-blocked_use_or_version: ""
-rejection_reason: ""
-reconsider_when: ""
-"""
-
-FILLED_SKILL = """\
+def valid_skill_text(
+    name: str = "roblox-widget-resource",
+    description: str = "Use Widget Resource for synchronized widget replication with deterministic lifecycle cleanup.",
+    use_when: str = "- Synchronizing replicated widget state across server-owned sessions.",
+) -> str:
+    """Return a generated skill satisfying the current structural contract."""
+    return f"""---
+name: {name}
+description: {description}
 ---
-name: roblox-evaera-promise
-description: Use the evaera Promise library (v4.0.0) when a Roblox task needs promise-based async coordination with cancellation in Luau.
----
 
-# Promise
+# Widget Resource
 
-Use **Promise** for promise-based async coordination in Luau. Guidance targets **v4.0.0** (source reviewed **2026-08-11**). Resource verification: **UNVERIFIED**.
+Use **Widget Resource** for synchronized widget state. Guidance targets **1.2.3** (source reviewed **2026-08-16**). Resource verification: **unverified**.
 
 ## Use when
 
-- Coordinating several async operations whose results must be combined or raced.
-- An async operation must be cancellable after it starts.
+{use_when}
 
 ## Do not use when
 
-- A single event connection or one `task.spawn` call already solves the need.
-- The project forbids third-party dependencies.
+- A local table cleanly satisfies the small one-script task.
 
 ## Prerequisites and installation
 
-1. Add `Promise = "evaera/promise@4.0.0"` to the `[dependencies]` section of `wally.toml`.
-2. Run `wally install` and confirm `Packages/Promise.lua` exists.
-3. Require it from a shared module: `local Promise = require(ReplicatedStorage.Packages.Promise)`.
+1. Install package `com.example.widget` at version `1.2.3` under `ReplicatedStorage.Packages`.
+
+## Operational reconciliation
+
+- Policy: required — project package manifests can select a different materially version-sensitive release.
+- Installed-state check: Inspect the project package manifest and read the `com.example.widget` version before requiring the module.
+- Expected identity/state: widget-resource + https://example.com/widget + com.example.widget + 1.2.3.
+- Parent-state check: Load matching schema-version 2 resource records and resource-bound learnings by slug plus canonical identity.
+- Mismatch/unknown action: Stop the affected version-sensitive use and invoke `roblox-resource-acquisition` in `repair/reconcile` mode.
+- Defect handoff: Capture the task, installed state, expected behavior, observed behavior, and smallest reproduction; then invoke `roblox-resource-acquisition` in `repair/reconcile` mode.
 
 ## Common path
 
-Create a promise around one async operation, then chain consumption. This sequence is grounded in the v4.0.0 source review and is not runtime-verified.
-
 ```luau
-local Promise = require(game:GetService("ReplicatedStorage").Packages.Promise)
-
-local function fetchProfile(userId: number)
-    return Promise.new(function(resolve, reject)
-        local ok, result = pcall(function()
-            return game:GetService("Players"):GetNameFromUserIdAsync(userId)
-        end)
-        if ok then resolve(result) else reject(result) end
-    end)
-end
-
-fetchProfile(1):andThen(print):catch(warn)
+local Widget = require(game.ReplicatedStorage.Packages.Widget)
+local session = Widget.new()
+session:Start()
 ```
 
 ## Client/server placement
 
-Place the Promise module in `ReplicatedStorage.Packages` so both sides can require it. Promises never cross the client/server boundary; resolve them locally and send plain data over RemoteEvents. The server retains authority over all game state; never resolve a server decision from a client-supplied promise result.
+Create authoritative sessions on the server and validate every client request. Clients may observe replicated widget state but never choose authoritative values or invoke server-only lifecycle methods.
 
 ## Mental model
 
-A Promise wraps one eventual value in states Started -> Resolved/Rejected/Cancelled. Chaining with `andThen` returns a new promise; rejection propagates down the chain until a `catch`.
+Each server-owned session publishes a replicated widget snapshot and owns cleanup for all connections created during its lifetime.
 
 ## Lifecycle and cleanup
 
-- Initialization: construct with `Promise.new(executor)`; the executor runs immediately on its own thread.
-- Reuse: a settled promise can be observed repeatedly; it never re-runs its executor.
-- Cleanup/destruction: call `:cancel()` on promises tied to destroyed instances; register cleanup in the executor's `onCancel` hook.
+- Initialization: Create one server-owned session after package loading completes.
+- Reuse: Reuse the session for related widget updates during its lifetime.
+- Cleanup/destruction: Call the documented destroy method when the owning system stops.
 
 ## API used by this skill
 
-Source-reviewed (not runtime-verified) public APIs from v4.0.0: `Promise.new`, `Promise.all`, `Promise.race`, `andThen`, `catch`, `finally`, `cancel`, `Promise.delay`.
+Use `Widget.new()`, `session:Start()`, and `session:Destroy()` for the documented lifecycle.
 
 ## Failure modes
 
-### Chain silently stops after an error
+### Widget never appears
 
-Likely cause: no `catch` at the chain end -> diagnosis: add `:catch(warn)` temporarily and observe the surfaced rejection -> repair: handle or propagate the rejection explicitly.
+A missing package or wrong server placement causes initialization failure; inspect the manifest and move initialization to the server before retrying.
 
 ## Limitations
 
-- Guidance targets v4.0.0 only; older v3 APIs differ around cancellation.
+- Does not replace server-side validation of client-controlled widget requests.
 
 ## Security notes
 
-No trust boundary is special to this resource: it performs no networking, persistence, or remote access by itself. Preserve server authority; never embed secrets in source.
+Keep the server authoritative, validate client payloads before changing widget state, and pin the inspected package version.
 
 ## Verify after installation
 
-Run: in Studio's command bar, `local P = require(game.ReplicatedStorage.Packages.Promise); P.resolve(42):andThen(print)`
+Run: Execute `lune run tests/widget.luau` after installing the package.
 
-Pass condition: the output window prints `42` with no error within one second.
+Pass condition: The command prints `widget-ready` and exits with code `0`.
 
 ## Alternatives
 
-Roblox built-in `task.spawn` plus manual state flags was considered the closest built-in; Promise was preferred because cancellation and composition (`Promise.all`) would otherwise need bespoke code.
+- Use a local server-owned table when replication and managed cleanup are unnecessary.
 
 ## Provenance
 
-- DevForum: https://devforum.roblox.com/t/promise-implementation-for-roblox/463825
-- Canonical source/docs: https://github.com/evaera/roblox-lua-promise
-- Source version/release/commit: v4.0.0
-- Source review date: 2026-08-11
-- Resource verification: UNVERIFIED
+- Resource slug: widget-resource
+- Package identity: com.example.widget
+- DevForum: No DevForum topic is used/applicable
+- Canonical source/docs: https://example.com/widget
+- Source version/release/commit: 1.2.3
+- Source review date: 2026-08-16
+- Resource verification: unverified
 
 ## Version drift
 
-Before using newer upstream versions, check release notes/source for changes affecting the APIs and behavior documented above. Re-review material changes before updating this skill's source state, and rerun runtime proof when the claimed verification status would otherwise become stale.
+Before using another version, compare its release source and API changes, then rerun the installation and lifecycle checks.
 """

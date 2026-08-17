@@ -53,15 +53,16 @@ def test_unclosed_frontmatter_fails(skill_mod):
 
 
 def test_filled_skill_with_folded_description_passes_cli(scripts_dir, tmp_path):
-    folded = fixtures.FILLED_SKILL.replace(
-        "description: Use the evaera Promise library (v4.0.0) when a Roblox task "
-        "needs promise-based async coordination with cancellation in Luau.",
+    filled = fixtures.valid_skill_text()
+    folded = filled.replace(
+        "description: Use Widget Resource for synchronized widget replication "
+        "with deterministic lifecycle cleanup.",
         "description: >-\n"
-        "  Use the evaera Promise library (v4.0.0) when a Roblox task\n"
-        "  needs promise-based async coordination with cancellation in Luau.",
+        "  Use Widget Resource for synchronized widget replication\n"
+        "  with deterministic lifecycle cleanup.",
     )
-    assert folded != fixtures.FILLED_SKILL, "fixture replacement did not apply"
-    (tmp_path / "SKILL.md").write_text(folded)
+    assert folded != filled, "fixture replacement did not apply"
+    (tmp_path / "SKILL.md").write_text(folded, encoding="utf-8")
     proc = subprocess.run(
         [sys.executable, str(scripts_dir / "validate_skill.py"), str(tmp_path)],
         capture_output=True,
