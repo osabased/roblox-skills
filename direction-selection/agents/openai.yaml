@@ -1,4 +1,5 @@
 interface:
   display_name: "Direction Selection"
   short_description: "Choose a best-supported direction before commitment"
-  default_prompt: "Use $direction-selection to compare credible approaches and select a best-supported direction before implementation."
+  default_prompt: "Use $direction-selection when a live direction choice exists; evaluate it, compare credible alternatives when present or when candidate-space exploration is triggered, and return the direction decision plus commitment-scoped Direction Gate status proportionately supported by applicable evidence."
+
