@@ -7,6 +7,6 @@
 
 ### Roblox skills
 
-- [**structure-roblox-projects**](https://github.com/osabased/roblox-skills/tree/main/structure-roblox-projects "structure-roblox-projects") — Structure Roblox experiences and Luau codebases around clear ownership, project conventions, and explicit modification boundaries.
-- [**roblox-resource-acquisition**](https://github.com/osabased/roblox-skills/tree/main/roblox-resource-acquisition "roblox-resource-acquisition") — Find, evaluate, verify, learn, package, refresh, and validate Roblox community resources as reusable agent skills.
+- [**structure-roblox-projects**](https://github.com/osabased/roblox-skills/tree/main/structure-roblox-projects "structure-roblox-projects") — Structure Roblox Projects with scopes and ownership
+- [**roblox-resource-acquisition**](https://github.com/osabased/roblox-skills/tree/main/roblox-resource-acquisition "roblox-resource-acquisition") — Find's community Roblox resources and creates skills for them.
   
