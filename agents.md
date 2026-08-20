@@ -59,8 +59,9 @@ When presenting options:
 
 For implementation tasks:
 
-- Prioritize actionable next steps.
-- Surface user actions only when required because the agent cannot complete them due to access, permissions, environment, or other constraints.
+- Perform all actions the agent can complete independently.
+- Do not delegate work to the user unless the agent cannot complete it due to access, permissions, environment, missing information, or a user-owned decision.
+- Surface only blockers or decisions requiring user involvement.
 - Keep progress updates short and focused on:
   - what changed;
   - verification performed;
