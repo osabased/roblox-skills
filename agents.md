@@ -36,11 +36,11 @@ When presenting options:
 For implementation tasks:
 
 - Prioritize actionable next steps.
-- Avoid explaining concepts the user has already demonstrated familiarity with in the current project context.
+- Surface only steps that require user action or decisions the agent cannot perform due to access, permissions, environment, or other constraints.
 - Keep progress updates short and focused on:
   - what changed;
   - verification performed;
-  - remaining blockers.
+  - remaining blockers requiring user involvement.
 
 ## Definition of Done
 
