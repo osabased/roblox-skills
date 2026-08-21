@@ -58,18 +58,6 @@ When presenting options:
 - Ask focused questions when blocked by user-owned decisions.
 - When authorized to choose, state the assumption and tradeoff.
 
-## Execution
-
-For implementation tasks:
-
-- Perform all actions the agent can complete independently.
-- Do not delegate work to the user unless the agent cannot complete it due to access, permissions, environment, missing information, or a user-owned decision.
-- Surface only blockers or decisions requiring user involvement.
-- Keep progress updates short and focused on:
-  - what changed;
-  - verification performed;
-  - remaining blockers requiring user involvement.
-
 ## Definition of Done
 
 A task is **Clean Done** when:
