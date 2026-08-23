@@ -37,9 +37,10 @@ Before relying on reusable state, establish the host capability contract, compos
 ## Common path
 
 1. Choose ephemeral or profile-backed alignment.
-2. Build and resolve one `AlignmentRequest` using only applicable state.
-3. Authorize propagation before material downstream use.
-4. For profile-backed work only, establish host capabilities, compose scoped profile knowledge, and persist state changes through the documented contracts.
+2. For profile-backed alignment, establish the required host capabilities and compose applicable reusable profile knowledge before building the active alignment request.
+3. Build and resolve one `AlignmentRequest` using only the applicable task-local state plus any profile-backed state composed in step 2.
+4. Authorize propagation before material downstream use.
+5. Persist only profile mutations that are actually in scope, and only through the documented `ProfilePersistence` contract.
 
 ## Mental model
 
