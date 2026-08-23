@@ -1,0 +1,4 @@
+interface:
+  display_name: "Subjective Taste Alignment"
+  short_description: "Align consequential preference-sensitive choices"
+  default_prompt: "Use $subjective-taste-alignment to align this subjective direction before implementation."

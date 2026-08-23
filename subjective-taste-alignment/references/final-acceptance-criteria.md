@@ -1,0 +1,83 @@
+# Final acceptance criteria catalog
+
+These stable identifiers follow the governing specification order. Preserve identifiers when wording is clarified; add a new identifier only for a new acceptance obligation.
+
+- `AC-001` — Every host-dependent requirement has an implementation mechanism or behavior-preserving constrained fallback; anything with neither is a blocker.
+- `AC-002` — Material subjective decisions use one active-alignment contract that preserves taste, intent, constraints, ownership, authority, and unresolved state separately.
+- `AC-003` — Material propagation rejects active alignment whose decision-bearing basis changed after resolution.
+- `AC-004` — Unresolved load-bearing taste does not silently propagate.
+- `AC-005` — Cheap reversible choices execute provisionally only under active authority and remain unresolved agent judgment without epistemic strengthening.
+- `AC-006` — Delegated judgment does not become false preference evidence.
+- `AC-007` — Taste, intent, constraints, and authority remain independent.
+- `AC-008` — Explicit intent governs only constrained dimensions while taste guides remaining freedom.
+- `AC-009` — Authority changes do not retroactively rewrite evidence.
+- `AC-010` — Known indifference suppresses unnecessary calibration.
+- `AC-011` — Established taste avoids redundant discovery while collaboration presets may still require application checkpoints.
+- `AC-012` — Materially unresolved direction is selected before expensive refinement, without gratuitously rediscovering defined direction.
+- `AC-013` — Direction selection follows active authority and becomes taste evidence only through the evidence model.
+- `AC-014` — All five autonomy presets produce distinct observable behavior through common controls.
+- `AC-015` — User-selected autonomy changes authority scope, intervention threshold, and checkpoint granularity without manufacturing preference evidence.
+- `AC-016` — Unresolved load-bearing decisions pass a propagation-eligibility gate before material commitment.
+- `AC-017` — Load-bearing classification prevents shared, default, or reused commitments from being under-classified because initial implementation is cheap.
+- `AC-018` — Aggregate materiality prevents interacting minor assumptions from silently establishing a direction.
+- `AC-019` — Propagation eligibility does not bypass stricter checkpoint obligations without a later explicit scoped authority change.
+- `AC-020` — Delegated authority permits in-scope propagation while taste remains unresolved.
+- `AC-021` — Ambiguous inferred delegation stays at the narrowest supported scope until broader material authority is resolved.
+- `AC-022` — Cheap reversible choices are reevaluated when reuse, dependencies, aggregate direction, or integration makes them load-bearing.
+- `AC-023` — A provisional decision promoted to material use gains sufficient provenance and dependency traceability or is re-resolved.
+- `AC-024` — Profile scopes resolve by applicability, ownership, and overrides rather than a universal narrowest-wins rule.
+- `AC-025` — Scope identity and lifetime prevent expired session, unrelated project, or local artifact state from leaking.
+- `AC-026` — Full-profile, section-level, and property-level composition work.
+- `AC-027` — Semantic conflicts remain explicit rather than being averaged.
+- `AC-028` — Contextual and relational preferences survive storage and retrieval.
+- `AC-029` — Canonical profile state round-trips without semantic strengthening, flattening, broadening, or reinterpretation.
+- `AC-030` — Stale snapshots cannot overwrite newer state and interrupted writes recover a complete valid state without epistemic corruption.
+- `AC-031` — Import/export, migration, consolidation, branching/versioning, reset/relearn/retraction, and undo preserve epistemic and provenance invariants.
+- `AC-032` — Targeted lifecycle changes exclude only supported evidence-to-claim/property/scope links while retaining audit history and unrelated implications.
+- `AC-033` — Alternative profile branches become applicable only through explicit activation or composition.
+- `AC-034` — Branch-specific evidence stays branch-applicable while explicitly broader evidence is not narrowed by execution context alone.
+- `AC-035` — External edits to derived confidence or provenance cannot manufacture certainty.
+- `AC-036` — Cross-domain transfer reduces confidence where appropriate.
+- `AC-037` — Explicit non-learning or sandbox mode leaves reusable taste unchanged.
+- `AC-038` — Calibration probes have sufficient representation fidelity for the consequence of relying on their observations.
+- `AC-039` — Evidence quality controls confidence rather than observation count.
+- `AC-040` — Replaying one logical evidence operation is idempotent while separate observations remain distinct.
+- `AC-041` — Promotion and demotion use attributable, applicable, sufficiently represented evidence rather than repetition, age, silence, or implementation success.
+- `AC-042` — Silence, continued progress, lack of correction, and delegated implementation success do not manufacture preference or indifference evidence.
+- `AC-043` — Conflicting evidence resolves by relevance and evidentiary strength rather than vote-counting.
+- `AC-044` — Bundle-level evidence is not over-decomposed.
+- `AC-045` — Supported preference ranges and boundaries can be learned.
+- `AC-046` — “None of these” produces useful but bounded evidence.
+- `AC-047` — Observable actions contribute evidence only when subjective meaning is sufficiently inferable.
+- `AC-048` — References create scoped style profiles without becoming accidental personal taste.
+- `AC-049` — Explicitly requested reference properties remain distinct from inferred similarities.
+- `AC-050` — Reference-derived scope follows the requested work.
+- `AC-051` — Reference provenance supports narrow re-derivation and correction.
+- `AC-052` — Derived profiles supplement their source references when necessary.
+- `AC-053` — Live and pinned references have distinct behavior.
+- `AC-054` — Material reference derivation preserves enough source identity and freshness to prevent silent movement or assumed freshness.
+- `AC-055` — Project reference changes stale only affected knowledge.
+- `AC-056` — Exploration and deliberate divergence do not contaminate established profiles.
+- `AC-057` — Novelty budgets affect candidate exploration without changing evidence semantics.
+- `AC-058` — Profile edits preserve their intended target scope.
+- `AC-059` — Direct editing cannot manufacture confidence or provenance or silently alter evidence applicability.
+- `AC-060` — Direct and external edits preserve actor provenance; unknown or agent-authored changes cannot masquerade as user evidence.
+- `AC-061` — A user instruction is evidence for an agent-performed profile change; persistence is not a second observation.
+- `AC-062` — Decision-bearing input changes trigger dependency-aware reevaluation where applicable.
+- `AC-063` — Reconciliation remains explicitly incomplete across interruption until affected dependents are repaired and verified.
+- `AC-064` — A committed correction cannot lose its downstream reconciliation obligation across crash or restart.
+- `AC-065` — Superseded pending reconciliation re-resolves remaining dependents against current state.
+- `AC-066` — Ordinary authority changes remain prospective unless accompanied by a substantive decision-input correction.
+- `AC-067` — Whole-system coherence is checked separately from local approvals at appropriate integration points.
+- `AC-068` — Taste regression uses only sufficiently established high-confidence direction as a consistency expectation.
+- `AC-069` — Approved artifacts challenge stored taste only when representation, approval semantics, context, scope, and ownership are comparable.
+- `AC-070` — Contradictions can reopen alignment rather than blindly enforcing stored profiles.
+- `AC-071` — Stakeholder requirements remain separate from user preference.
+- `AC-072` — Stakeholder conflicts resolve through explicit ownership and authority rather than a universal hierarchy.
+- `AC-073` — Stakeholder-specific profiles do not mutate user taste.
+- `AC-074` — Craft priors improve execution without manufacturing preference evidence.
+- `AC-075` — Domain adapters preserve medium-specific policy while using the common alignment core across applicable domains.
+- `AC-076` — Users can inspect and control their profiles.
+- `AC-077` — Temporary and prototype state is cleaned up.
+- `AC-078` — Every final acceptance criterion maps to at least one observable verification path.
+- `AC-079` — All integrated behavioral scenarios pass.

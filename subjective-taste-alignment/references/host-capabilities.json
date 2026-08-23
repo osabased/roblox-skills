@@ -1,0 +1,33 @@
+{
+  "persistence_durability": {
+    "mechanism": "The managed workspace filesystem persists files across task actions until a user or authorized tool changes or deletes them; Git history adds durable versions only after commit.",
+    "evidence": "documented_storage_guarantee"
+  },
+  "revision_detection": {
+    "mechanism": "Content digests and Git object identities detect changes to repository-backed state.",
+    "evidence": "content_digest"
+  },
+  "external_edit_authorship": {
+    "fallback": "unknown",
+    "enforcement": "record_unknown",
+    "preserves": "An edit without host authorship metadata cannot become explicit user evidence."
+  },
+  "scope_identity": {
+    "fallback": "unresolved",
+    "enforcement": "preserve_unresolved",
+    "preserves": "The repository root identifies this project, but stable session, copied-artifact, and represented-subject identities remain unresolved until the host exposes or the user supplies them."
+  },
+  "source_addressability": {
+    "mechanism": "Repository paths plus immutable Git revisions identify retrievable source states after commit.",
+    "evidence": "versioned_locator"
+  },
+  "execution_surfaces": {
+    "mechanism": "The active authoring host exposes workspace filesystem access, PowerShell, Python, Git, skill validation, and delegated verification.",
+    "evidence": "callable_surface"
+  },
+  "domain_adapters": {
+    "fallback": "disabled",
+    "enforcement": "disable_operation",
+    "preserves": "No domain output can be claimed through an adapter until a matching adapter is implemented and registered."
+  }
+}
