@@ -9,5 +9,6 @@
 
 - [**structure-roblox-projects**](https://github.com/osabased/roblox-skills/tree/main/structure-roblox-projects "structure-roblox-projects") — Structure Roblox Projects with scopes and ownership
 - [**roblox-resource-acquisition**](https://github.com/osabased/roblox-skills/tree/main/roblox-resource-acquisition "roblox-resource-acquisition") — Find's community Roblox resources and creates skills for them.
-- [**subjective-taste-alignment**](https://github.com/osabased/roblox-skills/tree/main/subjective-taste-alignment "subjective-taste-alignment") — Align subjective creative decisions with user preferences, references, and validated feedback.
-  
+
+### Preference Skills
+- [**subjective-taste-alignment**](https://github.com/osabased/roblox-skills/tree/main/subjective-taste-alignment "subjective-taste-alignment") — Align subjective creative decisions with user preferences, references, and validated feedback.  
