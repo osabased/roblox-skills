@@ -1,6 +1,6 @@
 ---
 name: structure-roblox-projects
-description: Structure Roblox experiences and Luau codebases within explicit modification authority. Use for architecture review, DataModel placement, runtime ownership, ModuleScript grouping, entrypoints, Studio-native, Script Sync, Rojo, organization migrations, and scoped commission work in existing projects.
+description: Structure Roblox experiences and Luau codebases within explicit modification authority. Use for architecture review, DataModel placement, runtime ownership, ModuleScript grouping, entrypoints, Studio-native, Script Sync, Rojo, organization migrations, and scoped work in existing projects.
 ---
 
 # Structure Roblox Projects
@@ -13,7 +13,7 @@ Organize Roblox projects around explicit ownership, thin entrypoints, and user-c
 2. Keep a task-local scope ledger before any project or profile write:
    - **Authorized work:** assigned content and new artifacts clearly belonging to that deliverable; these may change.
    - **Inspectable context:** surrounding content needed to understand conventions, compatibility, dependencies, or integration; keep it read-only unless separately authorized.
-   - **Protected content:** client- or developer-owned content outside the assigned work; keep it read-only.
+   - **Protected content:** client-, user-, maintainer-, or developer-owned content outside the assigned work; keep it read-only.
    - **Integration-required content:** protected content whose change may be needed for a coherent integration; keep it read-only until the user explicitly expands authority or assigns the change to its owner.
 3. Inspect as much surrounding content as the task requires. Treat unclassified or ambiguous content as inspectable but protected; ask a narrow scope question only when the ambiguity blocks a proposed write.
 4. Treat access, architectural preference, project conventions, profiles, dependency reach, source-of-truth ownership, validation failures, and technical necessity as context rather than permission. Use profiles and conventions to decide how authorized work should fit, never what may be changed.
@@ -39,8 +39,14 @@ Choose the least mutating branch that satisfies the request:
    Keep modification authority separate from these axes; none of them establishes human ownership or permission.
 3. Starting at the affected project path, search upward to the detected project or workspace root for the nearest `.codex/roblox-structure.md`. Otherwise load `$CODEX_HOME/roblox-structure-profile.md`; resolve an unset `CODEX_HOME` to the platform user `.codex` directory. Treat profiles as read-only unless their write is authorized.
 4. Read [references/practices.md](references/practices.md) before every architecture review, DataModel placement or workflow recommendation, entrypoint change, layout design, or migration.
-5. For Design, Migration plan, or Implementation with no valid profile, read [references/preference-wizard.md](references/preference-wizard.md) and run its wizard before making organization decisions. Read both references together so the wizard draws option meanings and diagrams from `practices.md`.
-6. Apply this precedence to organization decisions inside authorized work: explicit current request, project profile, established project conventions, global profile, skill defaults. A global preference is only a fallback. When the request conflicts with a profile, honor the request; update the profile only with explicit permission for that write.
+5. For Design, Migration plan, or Implementation, first preserve any coherent established conventions that already resolve the organization choices relevant to the task. If no valid applicable profile exists and one or more material organization choices remain unresolved, read [references/preference-wizard.md](references/preference-wizard.md) and run only the unresolved parts of its wizard. A missing profile by itself is not a reason to prompt.
+6. Apply this precedence to organization decisions inside authorized work: explicit current request, project profile, established project conventions, global profile, current-task wizard selections, skill defaults. A global preference is only a fallback. When the request conflicts with a profile, honor the request; update the profile only with explicit permission for that write.
+
+### Established-project fast path
+
+When an existing project has a coherent, supported structure and the request does not ask for migration or redesign, fit authorized work into that structure instead of normalizing the project toward this skill's defaults. Do not introduce a different source-of-truth workflow, entrypoint model, module grouping style, framework, naming scheme, or lifecycle merely because another convention would be preferable in a greenfield project.
+
+Use the preference wizard only for material choices the project, applicable profiles, and current request genuinely leave open. Preserve local conventions for unaffected areas and keep any proposed cleanup outside the authorized change set unless it is required for correctness or explicitly requested.
 
 ## Complete the selected branch
 
