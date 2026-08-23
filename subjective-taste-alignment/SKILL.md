@@ -97,7 +97,7 @@ For acceptance work, read [references/acceptance-traceability.md](references/acc
 
 1. Provide Python 3.8+ for executable harness/scenario assessment; without Python, apply the same contracts explicitly and do not claim executable verification.
 2. Resolve the exact immutable source revision being installed from the repository or installation source, then copy `SKILL.md`, `references/`, `scripts/`, and `agents/` from that revision.
-3. Record that resolved revision in `.roblox-resources/records/subjective-taste-alignment.yaml`. The skill file intentionally does not attempt to embed the immutable identity of the commit that contains itself.
+3. Record that resolved revision in `.roblox-resources/records/subjective-taste-alignment.yaml`. The dated reviewed source state in Provenance identifies the reviewed source state but is not itself an embedded commit identifier.
 
 ## API used by this skill
 
@@ -137,7 +137,7 @@ No resource-specific trust boundaries exist beyond normal Roblox server-authorit
 
 Run: `python -m pytest tests -q` from this package directory.
 
-Pass condition: pytest exits with status 0 and reports no failed or error count. Do not bind installation validity to an exact number of collected tests; legitimate test additions must not make an otherwise passing suite fail this contract.
+Pass condition: pytest process status equals `0`, and the output contains no failed or error count. Do not bind installation validity to an exact number of collected tests; legitimate test additions must not make an otherwise passing suite fail this contract.
 
 ## Version drift
 
@@ -158,6 +158,6 @@ Each installed copy is pinned by the exact immutable source revision recorded ex
 - Package identity: not applicable because this first-party package ships directly from its own repository without any registry artifact
 - DevForum: No DevForum topic is applicable.
 - Canonical source/docs: https://github.com/osabased/roblox-skills
-- Source revision: resolve and record the exact immutable revision at installation/review time; this source file does not self-pin its containing commit
+- Source version/release/commit: reviewed source state dated 2026-08-23
 - Source review date: 2026-08-23
 - Resource verification: unverified
