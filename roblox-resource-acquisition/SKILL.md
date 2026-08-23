@@ -12,7 +12,7 @@ Acquire Roblox community tooling only when it is justified by the task. Treat us
 
 Do not turn the first plausible DevForum result into a skill, and do not acquire a dependency just because one exists.
 
-For a capability-directed task with no positive resource target, prefer a Roblox built-in, an adequate authorized project capability, or a small local implementation when it solves the need cleanly. Resource acquisition becomes live only when a community resource is materially useful, explicitly targeted, being compared, being adopted as reusable guidance, or already has lifecycle state that must be refreshed, repaired, or reconciled.
+For a capability-directed task with no positive resource target, prefer a Roblox built-in, an adequate authorized project capability, or a small local implementation when it solves the need cleanly. Resource acquisition becomes live only when a community resource is materially useful, explicitly targeted, being compared, being integrated or used, being adopted as reusable guidance, or already has lifecycle state that must be refreshed, repaired, or reconciled.
 
 Curation is an explicit trust decision by the user/project. **Trusted does not mean verified.** A resource passing its own tests also does not prove that an agent can use it correctly.
 
@@ -22,20 +22,21 @@ Choose the narrowest mode that satisfies the request, then read only the referen
 
 ### `evaluate/compare`
 
-Use when the task is to inspect, evaluate, compare, or select a resource without creating or operationally adopting reusable child guidance.
+Use when the task is to inspect, evaluate, compare, or select a resource without using/integrating it or creating/operationally adopting reusable child guidance.
 
 1. Read [references/qualification-workflow.md](references/qualification-workflow.md).
 2. Read [references/state-policy.md](references/state-policy.md) for truthful trust/verification status and output discipline.
-3. Stop after the requested evidence and decision. Do not generate a child skill as extra scope.
+3. Stop after the requested evidence and decision. Do not integrate the resource or generate a child skill as extra scope.
 
 ### `acquire/adopt`
 
-Use when the task requires selecting or integrating a resource and reusable child guidance and/or host adoption is actually in scope.
+Use when the task requires selecting, using, installing, or integrating a resource beyond evaluation. Reusable child guidance and operational host adoption are optional subscopes, not prerequisites for this mode.
 
 1. Read [references/qualification-workflow.md](references/qualification-workflow.md).
-2. When reusable child guidance is in scope, read [references/generation-validation.md](references/generation-validation.md).
-3. Apply host adoption and reconciliation semantics from [references/operational-lifecycle.md](references/operational-lifecycle.md) only when operational adoption is requested.
-4. Read [references/state-policy.md](references/state-policy.md) before recording state or reporting completion.
+2. Integrate or use the resource only to the authorized task/project scope after its applicable qualification and verification requirements are satisfied.
+3. When reusable child guidance is in scope, read [references/generation-validation.md](references/generation-validation.md).
+4. Apply host adoption and reconciliation semantics from [references/operational-lifecycle.md](references/operational-lifecycle.md) only when operational adoption of generated guidance is requested.
+5. Read [references/state-policy.md](references/state-policy.md) before recording state or reporting completion.
 
 ### `refresh`
 
@@ -71,7 +72,7 @@ Hold these across every mode:
 - Keep resource proof proportional to the intended use and use isolated/reversible verification where practical.
 - Preserve Roblox server authority, validate client-controlled inputs, and never expose credentials or secrets merely to validate a resource.
 - Do not publish, spend money, or perform irreversible project mutations merely to prove a resource works.
-- Generate reusable child guidance only when that lifecycle scope is requested or required by the task; evaluation alone grants no generation or host-adoption authority.
+- Generate reusable child guidance only when that lifecycle scope is requested or required by the task; evaluation or ordinary resource integration alone grants no generation or host-adoption authority.
 - A generated child is a second product with its own structural and behavioral validation burden.
 - Repair in bounded cycles; do not lower the bar, silently rewrite trust, or endlessly polish around a fundamental mismatch.
 - Keep user/project curated registry data and durable learnings outside this package according to the referenced contracts.
