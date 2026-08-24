@@ -7,6 +7,19 @@ description: Structure Roblox experiences and Luau codebases within explicit mod
 
 Organize Roblox projects around explicit ownership, thin entrypoints, and user-chosen conventions. Separate authority to inspect a project from authority to modify it. Preserve a supported established structure unless the user requests a migration.
 
+
+## Execution priority
+
+When approaching a task, resolve decisions in this order:
+
+1. Identify the requested outcome and selected operating mode.
+2. Determine what content may be modified and what must remain protected.
+3. Identify the existing project structure, source of truth, and conventions that must be preserved.
+4. Resolve only the architecture choices that are actually necessary for the task.
+5. Make the smallest coherent change that satisfies the request, then verify behavior.
+
+Do not expand investigation, migration scope, or cleanup beyond what is required to produce a correct result.
+
 ## Establish modification scope
 
 1. Derive modification authority from the current request and explicit clarifications. Accept boundaries expressed as projects, repositories, paths, synced directories, files, Roblox instances, systems, features, or other concrete work ownership. Treat a clear project-wide request as project-wide authority without extra ceremony.
@@ -52,9 +65,13 @@ Use the preference wizard only for material choices the project, applicable prof
 
 ### Review
 
+Goal: discover and communicate evidence-ranked risks without changing the project.
+
 Set review breadth independently from modification authority. Account for every reviewed entrypoint, ownership boundary, source-of-truth boundary, module group, and dependency direction, inspecting adjacent content when it bears on the result. Report evidence-ranked findings, consequences, and the smallest compatible improvements. Label protected findings as context-only and include them only when they materially affect requested compatibility, correctness, or security. A full-project review does not authorize later fixes. Finish without changing project or profile files.
 
 ### Design
+
+Goal: choose the smallest suitable future structure and explain its boundaries before implementation.
 
 Select the smallest layout that satisfies the resolved conventions inside authorized work. Provide the proposed DataModel or filesystem tree, all three architecture axes for each significant node, server and client startup flow, module dependency direction, source-of-truth boundaries, and checks needed to validate it. Separate protected integration changes as approval-dependent or owner actions. Finish when every authorized item has an unambiguous home and startup path and every boundary-crossing contract is identified.
 
@@ -64,7 +81,9 @@ Inventory the current and target hierarchies, tracing every affected `require`, 
 
 ### Implementation
 
-Confirm the intended write set against the scope ledger, then move each authorized concept once and update every authorized require, path, mapping, caller, and test needed for that coherent slice. Apply the boundary-crossing protocol before touching any protected reference. Keep each instance under one source of truth. Run broad read-only checks when useful; constrain rewriting formatters, generators, dependency operations, and snapshot updates to authorized outputs. Run the smallest relevant Studio playtest and exercise server and client when a boundary, entrypoint, remote, or replicated module changes. Report unrelated failures without fixing them. Finish when focused checks pass or blocked integration, owner actions, and residual risk are explicitly reported.
+Goal: produce the requested structural outcome while preserving correctness and boundaries.
+
+Confirm the intended write set against the scope ledger, then move each authorized concept once and update every authorized require, path, mapping, caller, and test needed for that coherent slice. Apply the boundary-crossing protocol before touching any protected reference. Keep each instance under one source of truth. Run broad read-only checks when useful; constrain rewriting formatters, generators, dependency operations, and snapshot updates to authorized outputs. Run the smallest relevant Studio playtest and exercise server and client when a boundary, entrypoint, remote, or replicated module changes. Validate representative behaviors, such as startup, affected feature initialization, relevant client/server interactions, and boundary-crossing flows when applicable. Report unrelated failures without fixing them. Finish when focused checks pass or blocked integration, owner actions, and residual risk are explicitly reported.
 
 ## Hold these invariants
 

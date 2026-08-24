@@ -12,6 +12,17 @@ Acquire Roblox community tooling only when it is justified by the task. Treat us
 
 Do not turn the first plausible DevForum result into a skill, and do not acquire a dependency just because one exists.
 
+
+## Evaluation stopping criteria
+
+Stop evaluation when:
+
+- the decision criteria are satisfied;
+- remaining uncertainty is unlikely to change the decision;
+- additional research has lower value than making a reversible choice and validating it.
+
+Avoid both premature adoption and indefinite comparison.
+
 For a capability-directed task with no positive resource target, prefer a Roblox built-in, an adequate authorized project capability, or a small local implementation when it solves the need cleanly. Resource acquisition becomes live only when a community resource is materially useful, explicitly targeted, being compared, being integrated or used, being adopted as reusable guidance, or already has lifecycle state that must be refreshed, repaired, or reconciled.
 
 Curation is an explicit trust decision by the user/project. **Trusted does not mean verified.** A resource passing its own tests also does not prove that an agent can use it correctly.
@@ -76,6 +87,23 @@ Hold these across every mode:
 - A generated child is a second product with its own structural and behavioral validation burden.
 - Repair in bounded cycles; do not lower the bar, silently rewrite trust, or endlessly polish around a fundamental mismatch.
 - Keep user/project curated registry data and durable learnings outside this package according to the referenced contracts.
+
+
+## Generated child skill quality requirements
+
+A generated reusable skill is complete only when it clearly defines:
+
+1. When it should activate.
+2. What failure mode it prevents.
+3. What behavior the agent should perform differently.
+4. How that changed behavior can be validated.
+
+A generated skill is not complete merely because it documents a resource.
+
+
+## Lifecycle state ownership
+
+Before creating or updating persistent lifecycle records, identify the authoritative registry or storage location for that state. Avoid duplicating resource identity, version, adoption, or validation state across competing locations.
 
 ## Completion
 
