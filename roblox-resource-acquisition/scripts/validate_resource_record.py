@@ -68,7 +68,7 @@ NESTED_FIELDS = {
         "parent_state_sources",
         "result",
     },
-    "resource_proof": {"executed", "passed", "environment", "result", "unavailable_claims"},
+    "resource_proof": {"executed", "passed", "target_version_or_commit", "environment", "result", "unavailable_claims"},
     "skill_validation": {
         "structural_passed",
         "independent_behavioral_executed",
@@ -80,6 +80,9 @@ NESTED_FIELDS = {
         "catalog_environment",
         "catalog_result",
     },
+}
+OPTIONAL_NESTED_FIELDS = {
+    "resource_proof": {"target_version_or_commit"},
 }
 LIST_FIELDS = {
     "alternatives_considered",
@@ -119,6 +122,7 @@ STRING_FIELDS = {
     "reconciliation.installed_version_or_commit",
     "reconciliation.detection_method",
     "reconciliation.result",
+    "resource_proof.target_version_or_commit",
     "resource_proof.environment",
     "resource_proof.result",
     "skill_validation.environment",
@@ -206,7 +210,8 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
             errors.append(f"{parent} must be a mapping")
             continue
         nested_unknown = sorted(set(value) - allowed)
-        nested_missing = sorted(allowed - set(value))
+        optional = OPTIONAL_NESTED_FIELDS.get(parent, set())
+        nested_missing = sorted((allowed - optional) - set(value))
         if nested_unknown:
             errors.append(f"unknown {parent} field(s): {', '.join(nested_unknown)}")
         if nested_missing:
@@ -260,18 +265,16 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
             errors.append("trusted records must name a trust.basis")
         if not nonempty_string(trust_reason):
             errors.append("trusted records must explain trust.reason")
-    if trust_basis in {"curated", "verified-acquisition", "project", "explicit-user"} and trust_level != "trusted":
+        if not nonempty_string(slug):
+            errors.append("trusted records require slug to bind trust to a stable identity")
+        if not nonempty_string(data.get("canonical_url")) and not nonempty_string(data.get("package_id")):
+            errors.append("trusted records require canonical_url or package_id to bind trust to canonical identity")
+    if trust_basis in {"curated", "verified-acquisition", "project", "explicit-user", "other"} and trust_level != "trusted":
         errors.append(f"trust.basis {trust_basis!r} requires trust.level: trusted")
     if trust_basis == "curated" and origin != "curated":
         errors.append("trust.basis curated requires discovery_origin: curated")
     if trust_basis == "verified-acquisition" and origin == "curated":
         errors.append("verified-acquisition is for previously untrusted discovery, not curated-origin records")
-
-    if trust_basis == "explicit-user":
-        if not nonempty_string(slug):
-            errors.append("trust.basis explicit-user requires slug to bind trust to a stable identity")
-        if not nonempty_string(data.get("canonical_url")) and not nonempty_string(data.get("package_id")):
-            errors.append("trust.basis explicit-user requires canonical_url or package_id to bind trust to canonical identity")
 
     canonical = data.get("canonical_url")
     if isinstance(canonical, str) and canonical.strip():
@@ -309,16 +312,22 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
 
     proof_executed = dotted_get(data, "resource_proof.executed")
     proof_passed = dotted_get(data, "resource_proof.passed")
+    proof_target = dotted_get(data, "resource_proof.target_version_or_commit")
     proof_environment = dotted_get(data, "resource_proof.environment")
     proof_result = dotted_get(data, "resource_proof.result")
     unavailable_claims = dotted_get(data, "resource_proof.unavailable_claims")
     if proof_passed is True and proof_executed is not True:
         errors.append("resource_proof.passed cannot be true unless resource_proof.executed is true")
     if proof_executed is True:
+        if not nonempty_string(proof_target):
+            errors.append("executed resource proof must record resource_proof.target_version_or_commit")
         if not nonempty_string(proof_environment):
             errors.append("executed resource proof must record resource_proof.environment")
         if not nonempty_string(proof_result):
             errors.append("executed resource proof must record resource_proof.result")
+    if proof_executed is True and nonempty_string(proof_target) and nonempty_string(version):
+        if proof_target.strip() != version.strip():
+            errors.append("executed resource proof target must exactly match verification.version_or_commit")
     if status == "verified":
         if proof_executed is not True or proof_passed is not True:
             errors.append("verification.status verified requires executed and passing resource_proof")
@@ -491,27 +500,21 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
     generated_skill = data.get("generated_skill")
     if any(value is True for value in (structural, independent_executed, independent_passed)) and not nonempty_string(generated_skill):
         errors.append("skill validation evidence requires generated_skill to identify the generated skill")
+    if not nonempty_string(generated_skill):
+        if host_adoptions:
+            errors.append("host_adoptions require generated_skill to identify the adopted generated child")
+        if catalog_status in {"verified", "unavailable", "failed"} or any(
+            nonempty_string(value) for value in (catalog_fingerprint, catalog_environment, catalog_result)
+        ):
+            errors.append("catalog routing evidence requires generated_skill to identify the generated child")
 
     if trust_basis == "verified-acquisition":
-        required_nonempty = {
-            "canonical_url": canonical,
-            "verification.validated_at": validated_at,
-            "verification.version_or_commit": version,
-            "generated_skill": generated_skill,
-        }
-        for field, value in required_nonempty.items():
-            if not nonempty_string(value):
-                errors.append(f"verified-acquisition requires {field}")
+        # Resource-side promotion is independent of the optional generated child.
+        # Generic verification rules above already require dated immutable source
+        # state, executed/passing resource proof, and no unavailable claims when
+        # verification.status is verified.
         if status != "verified":
             errors.append("verified-acquisition requires verification.status: verified")
-        if proof_executed is not True or proof_passed is not True:
-            errors.append("verified-acquisition requires executed and passing resource_proof")
-        if structural is not True:
-            errors.append("verified-acquisition requires skill_validation.structural_passed: true")
-        if independent_executed is not True or independent_passed is not True:
-            errors.append("verified-acquisition requires executed and passing independent behavioral skill validation")
-        if isinstance(unavailable_claims, list) and unavailable_claims:
-            errors.append("verified-acquisition cannot have material resource_proof.unavailable_claims")
 
     if trust_basis == "curated":
         if not nonempty_string(slug):
@@ -522,8 +525,8 @@ def validate_record(path: Path, data: dict[str, Any]) -> tuple[list[str], list[s
             notes.append("curated + trusted + unverified is valid; curation establishes trust, not runtime verification")
 
     if status == "failed":
-        if trust_basis == "curated" and not nonempty_string(data.get("blocked_use_or_version")):
-            errors.append("failed curated records must identify blocked_use_or_version without revoking catalog trust")
+        if trust_level == "trusted" and not nonempty_string(data.get("blocked_use_or_version")):
+            errors.append("failed trusted records must identify blocked_use_or_version without revoking policy trust")
         elif trust_level == "untrusted" and not nonempty_string(data.get("rejection_reason")):
             notes.append("failed untrusted record has no rejection_reason yet; acceptable during investigation, but record one before final rejection")
 

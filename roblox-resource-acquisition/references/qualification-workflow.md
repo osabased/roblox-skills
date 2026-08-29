@@ -1,6 +1,6 @@
 # Resource qualification workflow
 
-Use this reference for resource targeting, discovery, trust qualification, understanding, and upstream verification. The parent `SKILL.md` decides the operating mode before loading this workflow.
+Use this reference for resource targeting, discovery, trust qualification, understanding, and upstream verification. The parent [SKILL.md](../SKILL.md) decides the operating mode before loading this workflow.
 
 ## 0. Decide whether acquisition is warranted
 
@@ -27,6 +27,8 @@ For a capability-directed request with no positive resource target, do **not** a
 - the resource solves a more general problem but is a worse fit than a small local implementation.
 
 Search is a means, not the goal.
+
+Stop evaluation when the decision criteria are satisfied, remaining uncertainty is unlikely to change the decision, and additional research has lower value than making a reversible choice and validating it. Avoid both premature adoption and indefinite comparison.
 
 ### Positively targeted resources
 
@@ -60,7 +62,7 @@ Curated resource state is **user/project-owned data and must live outside this s
 
 A **valid** catalog entry means **trusted by policy**. Validate/parse curated entries according to [curated-registry.md](curated-registry.md); malformed entries do not grant trust. Do not require a valid curated resource to re-earn trust through the acquisition proof gates before it can be selected. Trust binds to the entry's stable `slug` and canonical identity (`canonical_url`, plus `package_id` when present), not merely to its display name. However, trust is not a claim that every current version, API, installation path, or integration detail has been independently verified. Re-check volatile facts such as version, maintenance, API, installation, deprecation, and canonical source before relying on them.
 
-Load the external learnings store alongside the registry per [learnings-store.md](learnings-store.md). During discovery, failed-query learnings retire known-dead query shapes without narrowing the requirement itself. A rejection learning deprioritizes its candidate only while its recorded version context still matches current upstream and its reconsider condition has not triggered; once upstream moves past the rejected state, the rejection is stale and the candidate re-enters normally. Learnings never reorder curated preference and never silently suppress a curated resource — an adverse learning about a curated resource routes through the section 2 contradiction path, not around it.
+Load the external learnings store alongside the registry per [learnings-store.md](learnings-store.md). During discovery, failed-query learnings retire known-dead query shapes without narrowing the requirement itself. A rejection learning deprioritizes its candidate only while its recorded version context still matches current upstream and its reconsider condition has not triggered; once upstream moves past the rejected state, the rejection is stale and the candidate re-enters normally. Learnings never reorder curated preference and never silently suppress a curated resource — an adverse learning about a curated resource routes through the [qualification contradiction path](#2-qualify-candidates-according-to-actual-trust), not around it.
 
 Do not add, remove, replace, or silently rewrite the identity of curated resources merely because this workflow discovers or prefers something. Registry membership and identity are controlled by the user/project. Mutate them only when explicitly directed by the user or an explicit project policy.
 
@@ -159,7 +161,7 @@ Prefer executable evidence in this order when available:
 
 Treat Open Cloud Luau Execution as mutation-capable. Headless tasks can invoke cloud-backed engine APIs such as DataStores, and supported execution paths can save place changes; current execution limits and persistence behavior should be re-checked in Creator Hub before relying on them. Do not assume a proof is read-only. It is not a substitute for Studio/MCP when the proof depends on physics simulation or automatic `Script`/`LocalScript` execution. Default to a disposable/test place or universe and non-production cloud data. Do not call DataStores, persistence APIs, or place-save operations during proof unless the required behavior needs them and the target is explicitly safe for mutation.
 
-Never label an unexecuted check as a passing runtime test. If an applicable claim requires runtime execution and no compatible execution environment is available, resource verification is **unavailable**, not passed. For an untrusted resource, this prevents automatic trust promotion when the unknown is material. For a policy-trusted resource, trust remains granted by its recorded basis, but verification must remain explicitly unavailable/unverified.
+Never label an unexecuted check as a passing runtime test. When executable resource proof runs, record the exact version/commit/source-state target actually exercised; a passing proof may establish `verified` only for that same target. If an applicable claim requires runtime execution and no compatible execution environment is available, resource verification is **unavailable**, not passed. For an untrusted resource, this prevents automatic trust promotion when the unknown is material. For a policy-trusted resource, trust remains granted by its recorded basis, but verification must remain explicitly unavailable/unverified.
 
 Test only what matters, but cover applicable categories:
 
@@ -171,4 +173,4 @@ Test only what matters, but cover applicable categories:
 - one meaningful edge or failure case;
 - compatibility with the project's actual conventions.
 
-If a test exposes an intrinsic defect in an untrusted candidate, reject it and return to discovery only when alternatives are in scope. If it exposes a defect in a trusted resource, mark the affected verification/use as failed or blocked, report it, and do not silently rewrite its trust basis. If the failure is caused by misunderstanding, correct the model and rerun. Do not modify third-party source merely to force a pass unless the task explicitly calls for maintaining a fork.
+If a test exposes an intrinsic defect in an untrusted candidate, reject it and return to discovery only when alternatives are in scope. If it exposes a defect in a trusted resource, set verification truthfully to failed and record the exact affected version/use in `blocked_use_or_version`, report it, and do not silently rewrite its trust basis. This blocking requirement applies to every policy-trusted basis, not only curated resources. If the failure is caused by misunderstanding, correct the model and rerun. Do not modify third-party source merely to force a pass unless the task explicitly calls for maintaining a fork.

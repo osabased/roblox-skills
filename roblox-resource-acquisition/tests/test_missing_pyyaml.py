@@ -9,6 +9,7 @@ SCRIPTS = [
     "validate_curated_registry.py",
     "validate_learnings_store.py",
     "validate_resource_record.py",
+    "validate_resource_bundle.py",
     "validate_skill.py",
     "validate_skill_catalog.py",
 ]

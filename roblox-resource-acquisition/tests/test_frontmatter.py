@@ -37,7 +37,14 @@ def test_duplicate_frontmatter_key_still_fails(skill_mod):
         skill_mod.parse_frontmatter("---\nname: a\nname: b\n---\nbody\n")
 
 
-def test_nested_frontmatter_value_fails(skill_mod):
+def test_metadata_mapping_parses(skill_mod):
+    meta, _body = skill_mod.parse_frontmatter(
+        "---\nname: roblox-thing\ndescription: Does a thing well.\nmetadata:\n  owner: tooling\n---\nbody\n"
+    )
+    assert meta["metadata"] == {"owner": "tooling"}
+
+
+def test_non_metadata_nested_frontmatter_value_fails(skill_mod):
     with pytest.raises(ValueError, match="must be a scalar"):
         skill_mod.parse_frontmatter("---\nname:\n  nested: x\n---\nbody\n")
 
@@ -62,9 +69,11 @@ def test_filled_skill_with_folded_description_passes_cli(scripts_dir, tmp_path):
         "  with deterministic lifecycle cleanup.",
     )
     assert folded != filled, "fixture replacement did not apply"
-    (tmp_path / "SKILL.md").write_text(folded, encoding="utf-8")
+    child = tmp_path / "roblox-widget-resource"
+    child.mkdir()
+    (child / "SKILL.md").write_text(folded, encoding="utf-8")
     proc = subprocess.run(
-        [sys.executable, str(scripts_dir / "validate_skill.py"), str(tmp_path)],
+        [sys.executable, str(scripts_dir / "validate_skill.py"), str(child)],
         capture_output=True,
         text=True,
     )

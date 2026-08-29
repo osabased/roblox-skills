@@ -1,7 +1,7 @@
 schema_version: 2
 
 resource: ""
-slug: "" # stable curated/discovery identity when known
+slug: "" # required for trusted records; stable curated/discovery identity
 discovery_origin: "" # curated | project | devforum | other; explain direct user targeting under selection_reason
 
 trust:
@@ -9,7 +9,8 @@ trust:
   basis: "" # curated | verified-acquisition | project | explicit-user | other
   reason: ""
 
-# Identity that the trust/verification record applies to.
+# Identity that the trust/verification record applies to. Trusted records require
+# slug plus at least one of canonical_url/package_id; some trust bases are stricter.
 canonical_url: ""
 package_id: ""
 
@@ -37,10 +38,13 @@ alternatives_considered: []
 resource_proof:
   executed: false
   passed: false
+  target_version_or_commit: "" # exact source/version actually exercised; required when executed
   environment: ""
   result: ""
   unavailable_claims: [] # material required claims that could not be executed; must be empty for verified-acquisition
 
+# Optional second product. Leave generated_skill empty when no reusable child is in scope;
+# its validation state never grants or revokes upstream resource trust by itself.
 generated_skill: ""
 skill_validation:
   structural_passed: false

@@ -123,6 +123,7 @@ def valid_record() -> dict:
         "resource_proof": {
             "executed": False,
             "passed": False,
+            "target_version_or_commit": "",
             "environment": "",
             "result": "",
             "unavailable_claims": [],
@@ -284,3 +285,70 @@ Pass condition: The command prints `widget-ready` and exits with code `0`.
 
 Before using another version, compare its release source and API changes, then rerun the installation and lifecycle checks.
 """
+
+
+
+def verified_acquisition_record(*, generated_skill: str = "") -> dict:
+    """Return a resource-side verified-acquisition record with no child dependency."""
+    record = deepcopy(valid_record())
+    record["discovery_origin"] = "devforum"
+    record["trust"] = {
+        "level": "trusted",
+        "basis": "verified-acquisition",
+        "reason": "Previously untrusted resource passed the applicable upstream resource proof.",
+    }
+    record["verification"] = {
+        "status": "verified",
+        "validated_at": "2026-08-16",
+        "version_or_commit": "v4.0.0",
+    }
+    record["resource_proof"] = {
+        "executed": True,
+        "passed": True,
+        "target_version_or_commit": "v4.0.0",
+        "environment": "Roblox Studio isolated qualification place",
+        "result": "Promise resolution, rejection, chaining, and cancellation checks passed.",
+        "unavailable_claims": [],
+    }
+    record["generated_skill"] = generated_skill
+    record["skill_validation"] = {
+        "structural_passed": False,
+        "independent_behavioral_executed": False,
+        "independent_behavioral_passed": False,
+        "environment": "",
+        "result": "",
+        "catalog_routing_status": "unverified",
+        "catalog_fingerprint": "",
+        "catalog_environment": "",
+        "catalog_result": "",
+    }
+    return record
+
+
+def matching_widget_record() -> dict:
+    """Return a record whose canonical identity matches ``valid_skill_text``."""
+    record = deepcopy(valid_record())
+    record.update(
+        {
+            "resource": "Widget Resource",
+            "slug": "widget-resource",
+            "discovery_origin": "project",
+            "canonical_url": "https://example.com/widget",
+            "package_id": "com.example.widget",
+            "capability": "synchronized widget replication with deterministic lifecycle cleanup",
+            "devforum_url": "",
+            "generated_skill": "roblox-widget-resource",
+        }
+    )
+    record["trust"] = {
+        "level": "trusted",
+        "basis": "project",
+        "reason": "The project manifest selects this exact canonical resource identity.",
+    }
+    record["verification"] = {
+        "status": "unverified",
+        "validated_at": "",
+        "version_or_commit": "1.2.3",
+    }
+    record["skill_validation"]["structural_passed"] = True
+    return record

@@ -16,6 +16,7 @@ import sys
 from collections import Counter
 from datetime import date
 from pathlib import Path
+from typing import Any
 from urllib.parse import parse_qsl, urlparse
 
 if str(Path(__file__).resolve().parent) not in sys.path:
@@ -448,7 +449,14 @@ def has_executable_fenced_example(content: str) -> bool:
     return False
 
 
-def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
+def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
+    """Parse Agent Skills YAML frontmatter while preserving value types.
+
+    ``metadata`` is the standard mapping-valued field. Other sequence or
+    mapping values are rejected here because the generated-skill contract uses
+    scalar frontmatter for them. Type and length requirements are enforced by
+    ``validate_skill`` rather than hidden by string coercion.
+    """
     if not text.startswith("---\n"):
         raise ValueError("SKILL.md must start with YAML frontmatter")
     end = text.find("\n---\n", 4)
@@ -464,13 +472,13 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
         loaded = {}
     if not isinstance(loaded, dict):
         raise ValueError("SKILL.md frontmatter must be a YAML mapping")
-    data: dict[str, str] = {}
+    data: dict[str, Any] = {}
     for key, value in loaded.items():
         if not isinstance(key, str):
             raise ValueError(f"frontmatter keys must be strings, got {key!r}")
-        if isinstance(value, (dict, list)):
+        if key != "metadata" and isinstance(value, (dict, list)):
             raise ValueError(f"frontmatter field {key!r} must be a scalar value")
-        data[key] = "" if value is None else str(value).strip()
+        data[key] = value.strip() if isinstance(value, str) else value
     return data, body
 
 
@@ -956,17 +964,48 @@ def validate_skill(root: Path) -> tuple[list[str], list[str]]:
     except ValueError as exc:
         return [str(exc)], warnings
 
-    for field in ("name", "description"):
-        if not meta.get(field):
-            errors.append(f"missing frontmatter field: {field}")
+    name_value = meta.get("name")
+    if not isinstance(name_value, str) or not name_value.strip():
+        errors.append("missing frontmatter field: name")
+        name = ""
+    else:
+        name = name_value.strip()
+        if len(name) > 64:
+            errors.append("frontmatter name must be at most 64 characters")
+        if not SLUG_RE.fullmatch(name):
+            errors.append("frontmatter name must be a lowercase kebab-case slug")
+        if name != root.name:
+            errors.append("frontmatter name must match the generated skill directory name")
 
-    name = meta.get("name", "")
-    if name and not SLUG_RE.fullmatch(name):
-        errors.append("frontmatter name must be a lowercase kebab-case slug")
+    description_value = meta.get("description")
+    if not isinstance(description_value, str) or not description_value.strip():
+        errors.append("missing frontmatter field: description")
+        description = ""
+    else:
+        description = description_value.strip()
+        if len(description) > 1024:
+            errors.append("frontmatter description must be at most 1024 characters")
+        if word_count(description) < 3:
+            errors.append("frontmatter description is too thin to state a usable capability/trigger")
 
-    description = meta.get("description", "")
-    if description and word_count(description) < 3:
-        errors.append("frontmatter description is too thin to state a usable capability/trigger")
+    compatibility = meta.get("compatibility")
+    if compatibility is not None:
+        if not isinstance(compatibility, str):
+            errors.append("frontmatter compatibility must be a string")
+        elif not compatibility.strip() or len(compatibility.strip()) > 500:
+            errors.append("frontmatter compatibility must be 1 to 500 characters")
+
+    for field in ("license", "allowed-tools"):
+        value = meta.get(field)
+        if value is not None and not isinstance(value, str):
+            errors.append(f"frontmatter {field} must be a string")
+
+    metadata = meta.get("metadata")
+    if metadata is not None:
+        if not isinstance(metadata, dict):
+            errors.append("frontmatter metadata must be a mapping")
+        elif any(not isinstance(key, str) or not isinstance(value, str) for key, value in metadata.items()):
+            errors.append("frontmatter metadata keys and values must be strings")
 
     h1 = structural_headings(body, 1)
     if not h1 or not h1[0][0]:

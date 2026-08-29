@@ -11,7 +11,7 @@ Keep these claims separate:
 - **Operational:** every host-applicable installation, registration, discovery, and enablement check is confirmed, and explicit activation passed.
 - **Blocked:** the child remains installed, but current evidence prohibits the affected use until repair and regression checks pass.
 
-An empty `host_adoptions` list means artifact only. File placement alone never establishes operational adoption.
+An empty `host_adoptions` list means artifact only. File placement alone never establishes operational adoption. A record with no `generated_skill` cannot carry host adoption entries or completed/unavailable/failed catalog-routing evidence because there is no child for that lifecycle state to describe.
 
 ## Portable resource records
 
@@ -51,8 +51,8 @@ Host mutation is a separate gate after artifact validation.
 3. Install, update, enable, disable, or remove only after explicit user authorization or an explicit project policy.
 4. Record each available evidence facet rather than inferring unsupported host behavior.
 5. Mark the child `operational` only when all host-applicable facets are confirmed and an explicit activation smoke test passes.
-6. Run catalog validation against the target host's generated-child set before completing adoption.
-7. When an overlap cluster exists, require independent multi-skill routing tests before catalog routing becomes `verified`.
+6. Run catalog validation against the target host's generated-child set before completing adoption. Inspect the host-visible activation surfaces for plausible non-generated competitors; include each material competitor with `--routing-competitor` so it participates in overlap checks and the routing fingerprint without being subjected to the generated-child contract.
+7. When an overlap cluster exists — including generated-child versus non-generated-host-skill overlap — require independent multi-skill routing tests before catalog routing becomes `verified`.
 
 If a host cannot expose enough evidence, retain the strongest truthful non-operational state such as `installed` or `unavailable`.
 
@@ -62,14 +62,16 @@ Current official Codex guidance establishes these checks:
 
 - Repository skills are discovered from `.agents/skills` directories from the working directory through the repository root.
 - User skills are discovered from `$HOME/.agents/skills`.
+- Admin skills may be discovered from `/etc/codex/skills`; system skills are bundled by Codex. Include either as routing competitors when their host-visible activation scope materially overlaps the generated child.
+- Same-named skills are not merged, so a separately visible skill with the same name remains a distinct routing/conflict surface.
 - Codex normally detects skill changes automatically; restart only when the change does not appear.
 - `[[skills.config]]` entries in `~/.codex/config.toml` can disable a skill by `SKILL.md` path.
-- Explicit invocation uses the skill selector or `$skill-name`; implicit invocation depends on the frontmatter description.
+- In Codex CLI or the IDE extension, explicit invocation uses `/skills` or `$skill-name`; implicit invocation depends on the frontmatter description.
 - Large skill catalogs can cause descriptions to be shortened or skills to be omitted from the initial list.
 
 For Codex adoption, confirm the installed path, absence of an applicable disable entry, visibility in the current skill surface, and a successful explicit `$skill-name` smoke task. Treat implicit-routing behavior as separate catalog evidence.
 
-Source reviewed 2026-08-16: https://learn.chatgpt.com/docs/build-skills
+Source reviewed 2026-08-29: [OpenAI Codex skill docs](https://learn.chatgpt.com/docs/build-skills)
 
 ## Post-adoption defects
 
@@ -79,7 +81,7 @@ A repaired artifact does not update an installed host copy automatically. Obtain
 
 ## Catalog coherence
 
-Run `scripts/validate_skill_catalog.py` whenever a child is added, refreshed, repaired, or adopted. Store its order-independent fingerprint with routing evidence.
+Run `scripts/validate_skill_catalog.py` whenever a child is added, refreshed, repaired, or adopted. The ordinary positional paths are generated children and receive full generated-skill validation. Add materially overlapping host-visible non-generated skills with `--routing-competitor <path>`; they contribute only activation metadata to overlap detection and the order-independent routing fingerprint. Store that fingerprint with routing evidence. A change to any member of the tested routing set invalidates the old fingerprint/evidence.
 
-Static validation detects structural conflicts and overlap risk; it does not prove host selection. Verify reported overlap clusters with independent tasks that exercise each child's positive boundary, the competing child's boundary, and a simpler task that should select neither.
+Static validation detects structural conflicts and overlap risk; it does not prove host selection. Verify reported overlap clusters with independent tasks that exercise each generated child's positive boundary, the competing skill's boundary, and a simpler task that should select neither. A host with one generated child still requires Test J when a plausible non-generated routing competitor exists.
 

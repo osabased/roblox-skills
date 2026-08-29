@@ -42,14 +42,14 @@ Introduce a new ordinary-use instruction defect. Pass if the child captures the 
 
 ## Test J - Catalog routing
 
-Run whenever the target host set contains two or more generated children. First run `scripts/validate_skill_catalog.py` and retain its fingerprint. For every reported overlap cluster, give independent agents:
+Inspect the target host's visible skill activation surfaces whenever a generated child is added, refreshed, repaired, or adopted. Run this behavioral test when either (a) the target host set contains two or more generated children, or (b) any generated child has a plausible activation competitor among non-generated host-visible skills. First run `scripts/validate_skill_catalog.py` over the generated-child set and add each material non-generated competitor with `--routing-competitor <path>`; retain the resulting fingerprint. Non-generated competitors are routing inputs only and do not need to satisfy the generated resource-skill contract. For every reported overlap cluster, give independent agents:
 
-- one task specific to each child;
-- one task exercising the competing boundary;
-- one simpler task that should select neither child;
-- one explicit-invocation smoke task per child.
+- one task specific to each generated child in the cluster;
+- one task specific to each competing host-visible skill needed to exercise the boundary;
+- one simpler task that should select neither;
+- one explicit-invocation smoke task per generated child.
 
-Pass if the intended child is selected for each specific task, competing children stay out, the simpler task selects neither, explicit invocation succeeds, and the recorded fingerprint still matches the tested catalog. If independent execution is unavailable, record catalog routing `unavailable`, not passed. With fewer than two generated children, record it `not-applicable`.
+Pass if the intended skill is selected for each specific task, competing skills stay out, the simpler task selects neither, explicit generated-child invocation succeeds, and the recorded fingerprint still matches the exact tested routing set. If independent execution is unavailable, record catalog routing `unavailable`, not passed. Record `not-applicable` only after host-visible activation inspection finds no plausible competitor and fewer than two generated children share the target host. Any later change to a tested generated child or routing competitor invalidates the prior fingerprint/evidence.
 
 ## Regression rule
 
@@ -60,7 +60,7 @@ After any repair patch, rerun:
 
 A repaired test must additionally demonstrate that it can still fail: run it against the defective state it was written to catch, or an equivalent. A test weakened until it cannot fail is deleted evidence, not a repair.
 
-From the moment of a patch until these reruns complete and pass, the generated skill's prior behavioral validation is void and `skill_validation` must not continue to claim it. Attempt budgets, convergence, and stop criteria for the repair loop live in `references/repair-loop.md`.
+From the moment of a patch until these reruns complete and pass, the generated skill's prior behavioral validation is void and `skill_validation` must not continue to claim it. Attempt budgets, convergence, and stop criteria for the repair loop live in [repair-loop.md](repair-loop.md).
 
 ## Reliability threshold
 
@@ -70,8 +70,9 @@ Mark a generated resource skill behaviorally verified only when:
 - no applicable required test is recorded as unavailable;
 - generated-skill structural validator passes;
 - when a portable resource record is emitted, its resource-record structural/state validator passes;
+- when both a portable record and generated child exist, their `validate_resource_bundle.py` identity/source-state consistency gate passes;
 - operational reconciliation Test I passes when applicable;
-- catalog routing Test J passes when two or more generated children share the target host set;
+- catalog routing Test J passes when two or more generated children share the target host set or a generated child has a plausible non-generated host-visible competitor;
 - no unsupported API statement remains;
 - no high-severity safety/integration defect remains;
 - runtime tests are labeled accurately;

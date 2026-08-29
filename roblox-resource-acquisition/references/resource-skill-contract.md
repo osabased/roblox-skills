@@ -13,10 +13,15 @@ A generated resource skill is ready for validation only if it contains all of th
 - explicit resource verification status: `verified`, `unverified`, or `unavailable`; source review/provenance alone must never be presented as runtime verification;
 - exact DevForum topic provenance over HTTPS when applicable; if no DevForum topic is used/applicable, state that explicitly rather than inventing one; include a distinct canonical source/docs HTTPS URL when one exists, and if the DevForum thread is itself the only canonical source, say so explicitly instead of duplicating the same URL; at least one concrete HTTPS source URL must remain recoverable;
 
-## Required decision guidance
+## Required decision and behavioral purpose
 
-- when to use the resource;
+A generated skill is not complete merely because it documents the resource. It must make clear:
+
+- when it should activate/use the resource;
 - when not to use it;
+- what failure mode or recurring integration problem the guidance prevents;
+- what the agent should do differently because this skill exists;
+- how that changed behavior can be validated;
 - project assumptions/prerequisites;
 - an explicit alternatives section naming the closest meaningful alternative or Roblox built-in when relevant; if none is meaningful, state that explicitly with a short reason.
 

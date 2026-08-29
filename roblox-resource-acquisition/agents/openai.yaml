@@ -1,4 +1,4 @@
 interface:
   display_name: "Roblox Resource Acquisition"
   short_description: "Evaluate and manage Roblox community resources"
-  default_prompt: "Use $roblox-resource-acquisition only when a Roblox task materially needs a community resource decision or existing resource-skill lifecycle work. Choose the narrowest evaluate, acquire, refresh, or repair mode and keep trust, verification, validation, and adoption separate."
+  default_prompt: "Use $roblox-resource-acquisition only when a Roblox task materially needs a community resource decision or existing resource-skill lifecycle work. Choose the narrowest evaluate/compare, acquire/adopt, refresh, or repair/reconcile mode and keep trust, verification, validation, and adoption separate."

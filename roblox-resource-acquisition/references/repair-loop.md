@@ -1,16 +1,10 @@
 # Generated-Skill Repair Loop
 
-This reference expands section 7 of SKILL.md. Its scope is the **generated resource skill and its validation/adoption evidence**, including defects discovered during ordinary post-adoption use. It never authorizes editing the `roblox-resource-acquisition` package itself; evidence that this package's own guidance is defective follows the self-growth boundaries in SKILL.md (stop, show the evidence, propose the exact diff, wait for an explicit yes).
+Use this reference for iterative repair of a **generated resource skill or affected resource/child validation evidence**. For installed/host reconciliation and post-adoption blocking/restoration semantics, also use [operational-lifecycle.md](operational-lifecycle.md). It never authorizes editing the `roblox-resource-acquisition` package itself; evidence that this package's own guidance is defective follows the self-growth boundaries in [state-policy.md](state-policy.md).
 
 ## Post-adoption entry
 
-When ordinary use exposes a defect, installed/source-state mismatch, matching current block, or material adverse observation:
-
-1. Capture the task, host/project, installed identity/version, expected and observed behavior, and smallest reproduction.
-2. Match the child and external state by resource slug plus canonical identity.
-3. Mark every affected operational host adoption `blocked`.
-4. Reset affected behavioral and catalog-routing validation to an unpassed state.
-5. Classify and run the normal cycle below. Do not create a separate repair mechanism.
+When ordinary use exposes a defect after host adoption, first follow [operational-lifecycle.md](operational-lifecycle.md#post-adoption-defects) to capture the reproduction, reconcile installed/parent state, block affected host adoptions, and invalidate affected evidence. Then enter the normal repair cycle below.
 
 ## The cycle
 
@@ -18,8 +12,8 @@ One repair cycle, in order:
 
 1. **Classify** the failure into exactly one class below. If two defects are visible, take the one closest to the evidence and leave the other for its own cycle.
 2. **Fix once, narrowly.** Apply the single smallest change the class prescribes for one distinct failing check. Batched speculative edits hide which change fixed or broke what.
-3. **Re-run** what the class prescribes, then the regression reruns required by `references/testing-protocol.md`.
-4. **Record** one learning entry in the external store per `references/learnings-store.md`, kind per the class.
+3. **Re-run** what the class prescribes, then the regression reruns required by [testing-protocol.md](testing-protocol.md).
+4. **Record** one learning entry in the external store per [learnings-store.md](learnings-store.md), kind per the class.
 5. **Re-assess** against the budget, convergence, and stop rules.
 
 ## Classes
@@ -28,7 +22,7 @@ One repair cycle, in order:
 
 The resource itself cannot do what the acquisition brief requires.
 
-- **Action:** reject the affected candidate. Return to sections 1–2 for another candidate only when alternatives are in scope; otherwise report that the targeted or existing candidate cannot satisfy the request.
+- **Action:** reject the affected candidate. Return to candidate selection/discovery in [qualification-workflow.md](qualification-workflow.md) for another candidate only when alternatives are in scope; otherwise report that the targeted or existing candidate cannot satisfy the request.
 - **Re-run:** nothing for the rejected candidate.
 - **Record:** a `rejection` learning — identity, `version_context`, concise reason, `reconsider_when`.
 - **Status:** the candidate's resource verification is recorded `failed`. Nothing else moves.
@@ -47,7 +41,7 @@ A resource with a recorded policy trust basis contradicts the intended use.
 The resource is fine; the model of it was wrong, and proof or skill text built on the misreading is contaminated.
 
 - **Action:** re-read source/docs, correct the understanding, correct any generated text derived from it.
-- **Re-run:** every section 4 proof the misunderstanding invalidated; then, if skill text changed, the generated-skill regression reruns.
+- **Re-run:** every upstream resource proof in [qualification-workflow.md](qualification-workflow.md) that the misunderstanding invalidated; then, if skill text changed, the generated-skill regression reruns.
 - **Record:** an `integration-gotcha` learning stating the misread and the actual behavior.
 - **Status:** invalidated proof results reset to unexecuted until re-run.
 
@@ -91,14 +85,14 @@ A cycle converged when its target check now passes **and** no previously passing
 
 ## Stop criteria
 
-**Stop with success** the moment the reliability threshold in `references/testing-protocol.md` is met. Additional polishing past the threshold is out of scope.
+**Stop with success** the moment the reliability threshold in [testing-protocol.md](testing-protocol.md#reliability-threshold) is met. Additional polishing past the threshold is out of scope.
 
 **Stop and escalate** when any of the following holds:
 
 - a check exhausts its three-cycle budget;
 - oscillation: a patch reverts an earlier cycle's patch, or two checks alternate failing across cycles — the defect model is wrong and further patching will not fix it;
 - the evidence shows fundamental mismatch between resource and need: follow class 1 or class 2 instead of lowering the bar;
-- the only remaining fix would edit this acquisition skill's own package: the self-growth boundaries in SKILL.md take over.
+- the only remaining fix would edit this acquisition skill's own package: the self-growth boundaries in [state-policy.md](state-policy.md) take over.
 
 ## Escalation report
 
@@ -113,7 +107,7 @@ State, truthfully and compactly:
 
 No repair activity upgrades any status implicitly:
 
-- resource verification moves only when section 4 proof actually re-executes and passes;
+- resource verification moves only when the applicable upstream resource proof in [qualification-workflow.md](qualification-workflow.md) actually re-executes and passes;
 - structural skill validation moves only when `scripts/validate_skill.py` re-runs and passes;
 - behavioral skill validation moves only when independent behavioral execution re-runs and passes;
 - catalog routing moves only when the current catalog fingerprint's independent routing tests re-run and pass;
@@ -122,5 +116,5 @@ No repair activity upgrades any status implicitly:
 
 ## Learning emission
 
-Every repair cycle appends exactly one learning entry per `references/learnings-store.md`. If no store exists and one cannot be created, put the learning's content in the escalation or final report so it is not lost — never write it into this skill's package.
+Every repair cycle appends exactly one learning entry per [learnings-store.md](learnings-store.md). If no store exists and one cannot be created, put the learning's content in the escalation or final report so it is not lost — never write it into this skill's package.
 

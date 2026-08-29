@@ -1,4 +1,4 @@
-"""End-to-end CLI runs of all five validators against known-good/bad fixtures."""
+"""End-to-end CLI runs of all validators against known-good/bad fixtures."""
 
 import subprocess
 import sys
@@ -21,9 +21,10 @@ def write_utf8(path, text):
 
 
 def write_skill(root, *, name="roblox-widget-resource", description=None, use_when=None):
-    root.mkdir(parents=True, exist_ok=True)
+    skill_root = root if root.name == name else root / name
+    skill_root.mkdir(parents=True, exist_ok=True)
     write_utf8(
-        root / "SKILL.md",
+        skill_root / "SKILL.md",
         fixtures.valid_skill_text(
             name=name,
             description=description
@@ -32,7 +33,7 @@ def write_skill(root, *, name="roblox-widget-resource", description=None, use_wh
             or "- Synchronizing replicated widget state across server-owned sessions.",
         ),
     )
-    return root
+    return skill_root
 
 
 def test_registry_valid(scripts_dir, tmp_path):
@@ -116,8 +117,8 @@ def test_record_invalid_fails_only_for_seeded_state_defects(scripts_dir, tmp_pat
 
 
 def test_generated_skill_filled_passes(scripts_dir, tmp_path):
-    write_skill(tmp_path)
-    proc = run_cli(scripts_dir, "validate_skill.py", tmp_path)
+    child = write_skill(tmp_path)
+    proc = run_cli(scripts_dir, "validate_skill.py", child)
     assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
@@ -129,6 +130,31 @@ def test_generated_skill_unfilled_template_fails(scripts_dir, tmp_path):
     proc = run_cli(scripts_dir, "validate_skill.py", tmp_path)
     assert proc.returncode == 1
     assert "unresolved template content" in proc.stdout
+
+
+def test_resource_bundle_valid_cli(scripts_dir, tmp_path):
+    child = write_skill(tmp_path / "child")
+    record_data = fixtures.matching_widget_record()
+    record = write_utf8(
+        tmp_path / "record.yaml",
+        yaml.safe_dump(record_data, sort_keys=False),
+    )
+    proc = run_cli(scripts_dir, "validate_resource_bundle.py", record, child)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "PASS: resource-record/generated-skill bundle consistency checks passed" in proc.stdout
+
+
+def test_resource_bundle_mismatch_cli_fails(scripts_dir, tmp_path):
+    child = write_skill(tmp_path / "child")
+    record_data = fixtures.matching_widget_record()
+    record_data["slug"] = "different-widget"
+    record = write_utf8(
+        tmp_path / "record.yaml",
+        yaml.safe_dump(record_data, sort_keys=False),
+    )
+    proc = run_cli(scripts_dir, "validate_resource_bundle.py", record, child)
+    assert proc.returncode == 1
+    assert "Resource slug" in proc.stdout
 
 
 def test_catalog_valid_cli_reports_fingerprint_and_count(scripts_dir, tmp_path):
@@ -185,3 +211,35 @@ def test_catalog_overlap_cli_passes_with_routing_warning(scripts_dir, tmp_path):
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "OVERLAP:" in proc.stdout
     assert "overlap clusters require independent catalog-routing tests" in proc.stdout
+
+
+def test_catalog_accepts_non_generated_routing_competitor_cli(scripts_dir, tmp_path):
+    generated = write_skill(
+        tmp_path / "generated",
+        name="roblox-widget-resource",
+        description="Use Widget Resource for synchronized replicated widget sessions and deterministic lifecycle cleanup.",
+        use_when="- Synchronizing replicated widget sessions with deterministic cleanup.",
+    )
+    competitor = tmp_path / "manual-widget-helper"
+    competitor.mkdir()
+    write_utf8(
+        competitor / "SKILL.md",
+        "---\n"
+        "name: manual-widget-helper\n"
+        "description: Use Manual Widget Helper for synchronized replicated widget sessions and deterministic lifecycle cleanup.\n"
+        "---\n\n"
+        "# Manual Widget Helper\n\n"
+        "This host skill is not a generated resource child.\n",
+    )
+    proc = run_cli(
+        scripts_dir,
+        "validate_skill_catalog.py",
+        "--host",
+        "portable",
+        "--routing-competitor",
+        competitor,
+        generated,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "ROUTING_COMPETITORS: 1" in proc.stdout
+    assert "OVERLAP:" in proc.stdout

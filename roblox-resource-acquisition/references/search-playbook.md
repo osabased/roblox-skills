@@ -1,6 +1,6 @@
 # DevForum Resource Search Playbook
 
-Use this when broad discovery is required after checking built-ins/project dependencies and the external user/project curated registry described in `curated-registry.md`. The objective is a small set of credible candidates, not exhaustive browsing. Curated resources are already trusted by policy; broad discovery is for needs the curated registry does not adequately cover, material contradiction checks, or explicit alternative/comparison requests.
+Use this when broad discovery is required after checking built-ins/project dependencies and the external user/project curated registry described in [curated-registry.md](curated-registry.md). The objective is a small set of credible candidates, not exhaustive browsing. Curated resources are already trusted by policy; broad discovery is for needs the curated registry does not adequately cover, material contradiction checks, or explicit alternative/comparison requests.
 
 ## 1. Translate the need into search terms
 
@@ -24,7 +24,7 @@ Do not let synonyms silently broaden the requirement. They are discovery terms o
 
 Prefer results from:
 
-- `https://devforum.roblox.com/c/resources/71`
+- [Roblox DevForum Resources](https://devforum.roblox.com/c/resources/71)
 - Community Resources topics beneath that category;
 - relevant DevForum tag pages;
 - domain-restricted web search targeting `devforum.roblox.com` when forum search is insufficient.

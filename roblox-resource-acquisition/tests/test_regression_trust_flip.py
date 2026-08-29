@@ -6,8 +6,6 @@ different trust verdict depending on the environment. These tests pin the
 now-deterministic verdict: bare, quoted-empty, and omitted-value spellings of
 optional fields all validate identically.
 """
-from pathlib import Path
-
 import fixtures
 import yaml
 

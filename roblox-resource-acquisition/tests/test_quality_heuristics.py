@@ -16,11 +16,12 @@ def test_pass_condition_still_rejects_generic_claims(skill_mod):
     assert skill_mod.is_concrete_pass_condition("verify successful operation") is False
 
 
-def test_verified_acquisition_missing_canonical_url_reported_once(record_mod):
-    # An empty canonical_url used to be reported twice for verified-acquisition
-    # records (required_nonempty loop plus a redundant trailing check).
-    record = fixtures.invalid_record()
+def test_trusted_identity_missing_coordinates_reported_once(record_mod):
+    record = fixtures.verified_acquisition_record()
     record["canonical_url"] = ""
+    record["package_id"] = ""
     errors, _notes = record_mod.validate_record(Path("record.yaml"), record)
-    canonical_errors = [e for e in errors if "canonical" in e]
-    assert canonical_errors == ["verified-acquisition requires canonical_url"]
+    identity_errors = [e for e in errors if "canonical identity" in e]
+    assert identity_errors == [
+        "trusted records require canonical_url or package_id to bind trust to canonical identity"
+    ]

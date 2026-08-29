@@ -58,11 +58,11 @@ class ResourceRecordTests(unittest.TestCase):
         record["package_id"] = ""
         errors, _ = self.validate(record)
         self.assertIn(
-            "trust.basis explicit-user requires slug to bind trust to a stable identity",
+            "trusted records require slug to bind trust to a stable identity",
             errors,
         )
         self.assertIn(
-            "trust.basis explicit-user requires canonical_url or package_id to bind trust to canonical identity",
+            "trusted records require canonical_url or package_id to bind trust to canonical identity",
             errors,
         )
 

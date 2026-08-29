@@ -48,5 +48,15 @@ def skill_mod():
 
 
 @pytest.fixture(scope="session")
+def bundle_mod():
+    return load_script("validate_resource_bundle")
+
+
+@pytest.fixture(scope="session")
+def catalog_mod():
+    return load_script("validate_skill_catalog")
+
+
+@pytest.fixture(scope="session")
 def scripts_dir():
     return SCRIPTS_DIR

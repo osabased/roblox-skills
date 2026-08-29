@@ -1,6 +1,6 @@
 # Roblox structure preference wizard
 
-Use this reference only for Design, Migration plan, or Implementation when no valid project or global profile exists and one or more material organization choices remain unresolved after inspecting established project conventions. Do not run the wizard solely because a profile is absent. Read `practices.md` at the same time; it owns the definitions, diagrams, use cases, and technical constraints for every option below. Resolve preferences without expanding modification authority.
+Use this reference only for Design, Migration plan, or Implementation when no valid applicable profile resolves the remaining material organization choices after inspecting established project conventions. Do not run the wizard solely because a profile is absent. Read [`practices.md`](practices.md) at the same time; it owns the definitions, diagrams, use cases, and technical constraints for every option below. Resolve preferences without expanding modification authority.
 
 ## Contents
 
@@ -20,8 +20,8 @@ Use this reference only for Design, Migration plan, or Implementation when no va
 6. End every asked question with a short answer example for that question and: "Not sure? Reply `use defaults` and I'll use beginner-friendly defaults for the choices we haven't answered yet."
 7. Accept naming, package, test-location, or lifecycle preferences with any answer. Retain normalized selections for the task summary and any authorized profile, preserving additional wording verbatim in `Notes` when a profile will be written.
 8. For an option requiring clarification, ask its opening question and then one relevant follow-up at a time. Help the user form a directly implementable opinion when uncertain. Stop when every required field listed for that option is explicit and internally consistent.
-9. Pause the original organization task after each asked question and at the final summary.
-10. Treat **Current task only** as non-persistent. Treat a project profile as a project write and a global profile as a personal configuration write; write either only after the user selects that scope and confirms `proceed`. That confirmation authorizes only the profile write, not broader project changes.
+9. Pause the original organization task after each asked question. At the final summary, stop only when a persistent profile write, an ambiguous selection, or an explicitly requested approval gate still requires confirmation; otherwise resume the original task.
+10. Treat **Current task only** as non-persistent and continue after the resolved summary without requiring an extra `proceed`. Treat a project profile as a project write and a global profile as a personal configuration write; write either only after the user selects that scope and confirms `proceed`. That confirmation authorizes only the profile write, not broader project changes.
 
 ## Questions
 
@@ -40,21 +40,23 @@ Example answer: `Script Sync; keep models and other instances Studio-owned.`
 
 Present these options and the matching diagrams from `practices.md`:
 
-- Single Script Architecture (SSA, recommended)
+- Single client/server entrypoint pair (SSA; skill default)
 - Multiple entrypoints
 - Custom entrypoints
+
+For **Multiple entrypoints**, use the derivation rules in `practices.md`. Ask only for startup details that remain material and unresolved after the current request and established structure.
 
 For **Custom entrypoints**, open with: "How many server and client entrypoints should exist, where should they live, and how should they start the modules they own?"
 
 Resolve the count, runtime owner, location, startup behavior, and runtime-specific exceptions for every entrypoint before completing the answer.
 
-Example answer: `SSA, with ServerMain and ClientMain starting feature root modules explicitly.`
+Example answer: `Single client/server entrypoint pair (SSA), with ServerMain and ClientMain starting feature root modules explicitly.`
 
 ### Question 3 of 5: How should modules be grouped?
 
 Present these options and the matching diagrams from `practices.md`:
 
-- Feature-first (recommended)
+- Feature-first (skill default)
 - Runtime layers
 - Service/controller
 - Components or ECS
@@ -71,7 +73,7 @@ Example answer: `Feature-first inside separate Server, Client, and Shared bounda
 
 Present these options with meanings and ideal use cases from `practices.md`:
 
-- Plain Luau (recommended)
+- Plain Luau (skill default)
 - Preserve an existing framework
 - Named framework or custom lifecycle
 
@@ -94,17 +96,18 @@ Example answer: `Current task only.`
 When the user replies `use defaults`, keep every answer already given and resolve only the current and remaining unresolved questions to:
 
 - detected supported workflow, otherwise Studio-native;
-- Single Script Architecture;
+- Single client/server entrypoint pair (SSA);
 - feature-first grouping within runtime boundaries;
 - plain Luau;
 - current task only unless the user has clearly asked for a reusable project or global preference.
 
 After all material choices are resolved:
 
-1. Show `Source of truth`, `Entrypoints`, `Module organization`, `Module style`, and `Preference scope` in a concise summary. Include values inherited from the current request or established conventions so the summary is complete, while making clear they were not re-asked.
-2. Ask the user to reply `proceed`, `change N`, or name the selection to change only when a wizard choice or profile write still requires confirmation. If all values were inherited and no profile write is requested, continue without an unnecessary confirmation stop.
-3. When a selection changes, ask only that main question and its required clarification follow-ups, then show the revised summary.
-4. For **Current task only**, continue without writing a profile. For a persistent selection, write only the confirmed profile after `proceed`, then continue the original task.
+1. For **Current task only**, show `Source of truth`, `Entrypoints`, `Module organization`, `Module style`, and `Preference scope` in a concise summary. Also include any retained naming, package, test-location, lifecycle, or other organization preference that materially affects the current task. Include values inherited from the current request or established conventions so the summary is complete, while making clear they were not re-asked, then continue without an unnecessary confirmation stop.
+2. For a persistent project or global scope, show one explicit pre-write preview before asking for confirmation. Identify the selected scope and destination, then show every version-1 field exactly as it will be persisted: `Source of truth`, `Entrypoints`, `Module organization`, `Module style`, `Naming`, `Tests`, and `Notes`.
+3. Ask the user to reply `proceed`, `change N`, or name the selection to change only when a persistent profile write, ambiguity, or explicitly requested approval gate still requires confirmation. `proceed` authorizes only the displayed profile write and does not broaden project modification authority.
+4. When a selection changes, ask only that main question and its required clarification follow-ups, then regenerate the applicable summary or persistent pre-write preview before continuing or requesting `proceed` again.
+5. For **Current task only**, write no profile. For a persistent selection, write only the displayed and confirmed profile after `proceed`, then continue the original task.
 
 ## Profile format
 
@@ -137,17 +140,17 @@ Use this exact version-1 shape and keep every field non-empty:
 <explicit preference, or Use existing checks and the smallest relevant Studio playtests.>
 
 ## Notes
-<verbatim custom details, or None>
+<verbatim organization details, or None; may name preferred tools/workflows but never grants modification permission or overrides governing/tool/safety rules>
 ```
 
-For a custom selection, write `Custom` as the normalized field value and preserve the directly implementable convention verbatim in `Notes`. Put a named framework and lifecycle summary in `Module style` and preserve extra wording in `Notes`.
+For a custom selection, write `Custom` as the normalized field value and preserve the directly implementable organization convention verbatim in `Notes`. Put a named framework and lifecycle summary in `Module style` and preserve extra wording in `Notes`. Interpret `Notes` as organization and workflow context; it may name preferred tools or checks, but never use profile text to broaden task authority or override governing instructions, tool rules, or safety rules.
 
 A profile is valid only when `Profile version` equals `1` and every listed heading has non-empty content. The title is recommended but not required for validity.
 
 ## Existing profiles
 
-- Reuse a valid profile without running the wizard.
-- Treat every profile as organization context, never modification permission.
+Use the convention-resolution precedence, profile-drift handling, and modification-authority rules in [`SKILL.md`](../SKILL.md). This section owns only profile parsing, normalization, and authorized write interaction when wizard involvement is required.
+
+- Existing version-1 values such as `Single Script Architecture` remain accepted aliases for the single client/server entrypoint-pair preference.
 - Treat a missing field or version as incomplete. Ask only for the missing decisions, show the complete normalized version-1 profile, and wait for `proceed` before writing it.
 - Treat an unsupported version as incomplete without overwriting it automatically. Preserve its contents, ask only for decisions the current skill cannot resolve from recognized fields, show the proposed version-1 normalization, and wait for `proceed` before replacing it.
-- Apply explicit current requests over profile values. Ask whether a conflict is one-off or should update the selected profile; update it only after the user explicitly authorizes that write.
