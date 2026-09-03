@@ -1,4 +1,4 @@
 interface:
   display_name: "System Review"
-  short_description: "Review cross-component system behavior and architecture"
-  default_prompt: "Use $system-review to review the system through relevant end-to-end and failure scenarios. Distinguish demonstrated defects from visibility gaps, trace surviving findings to evidence and material consequences, and stop when the applicable scenarios are exercised without a demonstrated material defect."
+  short_description: "Review cross-component behavior through system scenarios"
+  default_prompt: "Use $system-review to test the system through the smallest relevant set of end-to-end and failure scenarios. Ground findings in evidence and material consequences, keep decision-sensitive missing evidence as visibility gaps, reconcile symptoms to demonstrated root causes, and stop when the applicable scenarios support the verdict."
