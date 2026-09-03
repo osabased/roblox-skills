@@ -1,6 +1,6 @@
 ---
 name: structure-roblox-projects
-description: Structure Roblox experiences and Luau codebases for architecture review or structural changes involving DataModel placement, runtime ownership, replication/Server Authority boundaries, ModuleScript grouping, entrypoints, Studio-native, Script Sync, Rojo workflows, or organization migrations. Preserve explicit modification scope and established conventions.
+description: Roblox structure review or changes involving DataModel placement, runtime ownership, replication, entrypoints, module grouping, or Studio/Script Sync/Rojo workflows.
 ---
 
 # Structure Roblox Projects
