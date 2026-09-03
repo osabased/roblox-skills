@@ -40,3 +40,5 @@ Synthesize by evidentiary and causal strength:
 5. the perspective qualified for a conclusion retains ownership of it.
 
 Return the reconciled conclusions and unresolved gaps to `system-review`. Do not start remediation or another review cycle from this reference.
+
+**Complete when:** each surviving conclusion has one qualified owner and supporting evidence, and every unresolved conflict names the evidence needed to settle it.
