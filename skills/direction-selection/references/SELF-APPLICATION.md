@@ -15,4 +15,4 @@ Protocol invocation, clause-by-clause validation, and verification of verificati
 
 Re-enter direction selection only when new material evidence changes the candidate space, ordered criteria, or a load-bearing assumption.
 
-**Complete when:** self-application ends in a `Direction Decision`, `Direction Blocker`, `Adaptive Direction`, applicability result, or finite correction of a concrete defect, and every required verification check passes.
+**Complete when:** self-application ends in a `Direction Decision`, `Direction Blocker`, `Adaptive Direction`, `Applicability Result`, or finite correction of a concrete defect, and every required verification check passes.

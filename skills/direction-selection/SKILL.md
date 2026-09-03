@@ -75,8 +75,8 @@ Multiple known competitive directions alone do not require searching for another
 Use this routing order:
 
 1. No live direction problem: `exit`, or `handoff` to the fitting owner/evidence route.
-2. Meaningful bounded choice with adequate framing, criteria, and candidate space: `lightweight`.
-3. Any authoritative full-mode trigger: `full`.
+2. Any authoritative full-mode trigger: `full`.
+3. Otherwise, a meaningful bounded choice with adequate framing, criteria, and candidate space: `lightweight`.
 
 For `lightweight`, read [LIGHTWEIGHT.md](references/LIGHTWEIGHT.md) completely, follow it, and return its local record and gate status.
 
