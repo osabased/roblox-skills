@@ -4,7 +4,6 @@
 
 - [**direction-selection**](https://github.com/osabased/roblox-skills/tree/main/direction-selection "direction-selection") — Select the best-supported direction before consequential planning or implementation.
 - [**system-review**](https://github.com/osabased/roblox-skills/tree/main/system-review "system-review") — Review cross-component system behavior, architecture, failure handling, and technology fit through evidence-backed scenarios.
-- [**cross-agent-synthesis**](https://github.com/osabased/roblox-skills/tree/main/cross-agent-synthesis "cross-agent-synthesis") — Reconcile independent analyses through targeted cross-signals and evidence-weighted root-cause synthesis.
 - [**agents.md**](https://github.com/osabased/roblox-skills/blob/main/agents.md) - An agents.md unrelated to the skills, but has principles that may be helpful.
 
 ### Roblox skills
