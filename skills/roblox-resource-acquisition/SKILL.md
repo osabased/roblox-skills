@@ -1,6 +1,6 @@
 ---
 name: roblox-resource-acquisition
-description: Roblox community resource lifecycle. Use when the task requests discovery, evaluation, comparison, selection, use, or integration of a Roblox community resource; creation or host adoption of reusable guidance for one; or refresh, repair, or reconciliation of an existing resource skill or lifecycle record.
+description: Roblox resource lifecycle for finding, evaluating, adopting, refreshing, or repairing community resources and reusable guidance around them.
 compatibility: Bundled validator scripts require Python 3.10+ and dependencies from requirements.txt.
 ---
 
