@@ -1,6 +1,6 @@
 ---
 name: system-review
-description: Review software systems when correctness depends on interactions among multiple components or operational failure behavior. Use for system or architecture review of data flow, authority, consistency, reliability, scalability, security boundaries, technology fit, or failure handling. Skip ordinary local code review, Roblox organization-only work, and selection among competing replacement directions.
+description: System review for cross-component correctness or operational failures involving reliability, consistency, security, scalability, or technology fit.
 ---
 
 # System Review
