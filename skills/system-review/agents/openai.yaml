@@ -1,4 +1,4 @@
 interface:
   display_name: "System Review"
-  short_description: "Review cross-component system behavior and architecture"
-  default_prompt: "Use $system-review to review the system through relevant end-to-end and failure scenarios. Distinguish demonstrated defects from visibility gaps and reconcile symptoms to root causes. When a defect has multiple materially different consequential corrections, return a direction handoff to $direction-selection instead of choosing inside the review."
+  short_description: "Review behavior and failures across system parts"
+  default_prompt: "Use $system-review to map material contracts, derive end-to-end and failure scenarios, and bound conclusions to applicable evidence. Preserve demonstrated defects when diagnosis is incomplete, distinguish visibility gaps from accepted residual risks, and hand open correction comparisons to $direction-selection."
