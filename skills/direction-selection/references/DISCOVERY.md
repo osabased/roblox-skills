@@ -8,7 +8,7 @@ With a surrounding controller, hand a non-directional unknown encountered before
 
 When a live direction comparison exists, enter discovery only when plausible outcomes can materially change the framing, candidate set, ranking, or Direction Gate. Preserve the interrupted comparison stage as owner, gather only the justified evidence, and return to that exact stage. Do not restart applicability or the full protocol.
 
-For standalone use only, discovery may serve a minimum bounded **applicability evidence probe** when evidence is necessary to determine whether a genuine direction problem exists or whether the incumbent is supportable. Apply the test below, then return to the [SKILL.md](SKILL.md) applicability/mode router. Exit if no direction problem remains. The probe is not automatically a terminal `Discovery Decision`; emit that record only when required evidence cannot be resolved in the bounded run and an actual stop or handoff is necessary.
+For standalone use only, discovery may serve a minimum bounded **applicability evidence probe** when evidence is necessary to determine whether a genuine direction problem exists or whether the incumbent is supportable. Apply the test below, then return to the [SKILL.md](../SKILL.md) applicability/mode router. Exit if no direction problem remains. The probe is not automatically a terminal `Discovery Decision`; emit that record only when required evidence cannot be resolved in the bounded run and an actual stop or handoff is necessary.
 
 ## Discovery Entry Test
 
@@ -40,7 +40,7 @@ Record before acting:
 
 Use the smallest contained experiment that yields representative evidence. Give higher-commitment experiments explicit limits, observability, and a rollback or exit path.
 
-Before evidence can resolve applicability or carry a deciding comparative claim, apply the deciding-evidence applicability rule in [SKILL.md](SKILL.md). Cheap or discriminating evidence that does not represent the actual property, version, environment, integration effects, or claim at risk is informative but non-deciding.
+Before evidence can resolve applicability or carry a deciding comparative claim, apply the deciding-evidence applicability rule in [SKILL.md](../SKILL.md). Cheap or discriminating evidence that does not represent the actual property, version, environment, integration effects, or claim at risk is informative but non-deciding.
 
 **Complete when:** the step has a named owner, uncertainty, discriminating outcomes, proportionate and future-horizon-reversible commitment, and checkable stop condition.
 
@@ -63,4 +63,3 @@ Do not rerun discovery indefinitely merely because uncertainty remains.
 Exploratory code, scaffolding, prototypes, and migrations are disposable by default. They may not silently cross the governed consequential commitment boundary without a passing conventional direction or a passing bounded adaptive commitment. This does not block unrelated, already-supported, or safely future-horizon-reversible production work, and no pre-gate work may create de facto lock-in.
 
 The loop is **complete when:** applicable evidence resolves or bounds the uncertainty enough to return to the owner, another entry test fails and returns control, a terminal `Discovery Decision` is required, or structurally unstable uncertainty returns to the canonical adaptive path.
-

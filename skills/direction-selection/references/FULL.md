@@ -1,6 +1,6 @@
 # Full direction-selection protocol
 
-Use this protocol only after `SKILL.md` routes the current decision to `full`. Apply the parent skill's invocation triggers, authority and preference semantics, Support threshold, Direction Gate scope, future-horizon reversibility rule, and output contracts throughout. If a specific decision-sensitive unknown blocks a comparison stage and no direction meets the Support threshold, read [DISCOVERY.md](DISCOVERY.md) completely and apply its Discovery Entry Test; bounded discovery returns to the interrupted stage.
+Use this protocol only after `../SKILL.md` routes the current decision to `full`. Apply the parent skill's invocation triggers, authority and preference semantics, Support threshold, Direction Gate scope, future-horizon reversibility rule, and output contracts throughout. If a specific decision-sensitive unknown blocks a comparison stage and no direction meets the Support threshold, read [DISCOVERY.md](DISCOVERY.md) completely and apply its Discovery Entry Test; bounded discovery returns to the interrupted stage.
 
 ## 1. Build and challenge the problem model
 
@@ -130,10 +130,10 @@ Set `Direction Gate: PASS` only when every applicable condition holds:
 
 Skipped mechanisms do not need to be "passed." `PASS` reports support only for the governed direction-dependent commitment and does not authorize unrelated or project-wide work.
 
-When the gate cannot pass, identify the exact failing condition. Route a resolvable, decision-sensitive unknown through bounded discovery. Ask only for a user-owned preference or external constraint. If further discovery lacks proportionate value, leave the direction explicitly unresolved unless the Adaptive Direction conditions in `SKILL.md` are met.
+When the gate cannot pass, identify the exact failing condition. Route a resolvable, decision-sensitive unknown through bounded discovery. Ask only for a user-owned preference or external constraint. If further discovery lacks proportionate value, leave the direction explicitly unresolved unless the Adaptive Direction conditions in `../SKILL.md` are met.
 
 **Complete when:** every applicable condition supports `PASS`, or the blocker produces bounded discovery, a focused user question, an Adaptive Direction, or an explicit unresolved state with `NOT PASSED`.
 
 ## 9. Record and return the outcome
 
-Use the matching `Direction Decision`, `Discovery Decision`, or `Adaptive Direction` contract in `SKILL.md`. Keep the record concise and proportional, return it with gate status to the caller/controller, and continue only into work separately authorized by the user's request.
+Use the matching `Direction Decision`, `Discovery Decision`, or `Adaptive Direction` contract in `../SKILL.md`. Keep the record concise and proportional, return it with gate status to the caller/controller, and continue only into work separately authorized by the user's request.

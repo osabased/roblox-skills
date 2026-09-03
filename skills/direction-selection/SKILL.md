@@ -22,7 +22,7 @@ Do not activate or continue this skill merely because a task contains uncertaint
 
 When one clear direction exists and the only unresolved issue is a directly inspectable factual or behavioral unknown, resolve that unknown through its fitting evidence route before generating candidates. With a surrounding controller, return `handoff`, explain why comparison does not currently own control, and give at most a fitting evidence-route hint. Do not start generic research, benchmarking, persistence, planning, or verification loops merely because an unknown is consequential.
 
-In standalone use, when the applicability distinction itself depends on one resolvable fact, use only the minimum bounded applicability evidence probe allowed by [DISCOVERY.md](DISCOVERY.md). Return to this router afterward; exit when the direction problem disappears. An applicability probe is not automatically a terminal `Discovery Decision`.
+In standalone use, when the applicability distinction itself depends on one resolvable fact, use only the minimum bounded applicability evidence probe allowed by [DISCOVERY.md](references/DISCOVERY.md). Return to this router afterward; exit when the direction problem disappears. An applicability probe is not automatically a terminal `Discovery Decision`.
 
 ### Authority and preference semantics
 
@@ -67,11 +67,11 @@ Use this routing order:
 2. Meaningful but bounded direction choice: `lightweight`.
 3. Materially competitive, framing-sensitive, search-space-sensitive, weakly justified consequential, or materially evidence-challenged direction problem: `full`.
 
-For `lightweight`, read [LIGHTWEIGHT.md](LIGHTWEIGHT.md) completely, follow it, and return its local record and gate status.
+For `lightweight`, read [LIGHTWEIGHT.md](references/LIGHTWEIGHT.md) completely, follow it, and return its local record and gate status.
 
-For `full`, record the invocation trigger(s), read [FULL.md](FULL.md) completely, and follow it. At any comparison stage, if a specific decision-sensitive unknown blocks that stage and no direction meets the Support threshold, read [DISCOVERY.md](DISCOVERY.md) completely and apply its Discovery Entry Test. The interrupted comparison stage remains the owner; bounded discovery returns to that exact stage rather than restarting applicability or the protocol.
+For `full`, record the invocation trigger(s), read [FULL.md](references/FULL.md) completely, and follow it. At any comparison stage, if a specific decision-sensitive unknown blocks that stage and no direction meets the Support threshold, read [DISCOVERY.md](references/DISCOVERY.md) completely and apply its Discovery Entry Test. The interrupted comparison stage remains the owner; bounded discovery returns to that exact stage rather than restarting applicability or the protocol.
 
-When changing this skill, another decision protocol, or a protocol that invokes it, read [SELF-APPLICATION.md](SELF-APPLICATION.md) completely before applying the full protocol.
+When changing this skill, another decision protocol, or a protocol that invokes it, read [SELF-APPLICATION.md](references/SELF-APPLICATION.md) completely before applying the full protocol.
 
 ### Direction Gate scope
 
