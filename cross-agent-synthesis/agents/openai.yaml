@@ -1,4 +1,0 @@
-interface:
-  display_name: "Cross-Agent Synthesis"
-  short_description: "Reconcile independent analyses without vote counting"
-  default_prompt: "Use $cross-agent-synthesis after independent review passes when cross-signals could materially change conclusions. Preserve first-pass independence, send only decision-relevant signals for targeted re-checks, then synthesize by evidence and root cause rather than consensus."
