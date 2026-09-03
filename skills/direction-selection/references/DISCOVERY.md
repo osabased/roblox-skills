@@ -1,14 +1,14 @@
 # Discovery Direction
 
-Discovery is a bounded call/return subroutine for a specific direction-sensitive unknown. It is not a generic pre-direction evidence router, a conservative default, a production direction, or a way to maximize confidence.
+Discovery is a bounded call/return subroutine for one direction-sensitive unknown. It is not a generic pre-direction evidence router, a conservative default, a production direction, or a way to maximize confidence.
 
 ## Invocation and ownership
 
 With a surrounding controller, hand a non-directional unknown encountered before a genuine direction problem is live back to that controller. Discovery does not own general research, benchmarking, user clarification, project-state inspection, planning, persistence, or verification before invocation.
 
-When a live direction comparison exists, enter discovery only when plausible outcomes can materially change the framing, candidate set, ranking, or Direction Gate. Preserve the interrupted comparison stage as owner, gather only the justified evidence, and return to that exact stage. Do not restart applicability or the full protocol.
+When a live direction comparison exists, enter discovery only when plausible outcomes can materially change the framing, candidate space, ranking, or Direction Gate. Preserve the interrupted comparison stage as owner, gather only the justified evidence, and return to that exact stage under the parent Continuation invariant. Do not restart applicability or the full protocol.
 
-For standalone use only, discovery may serve a minimum bounded **applicability evidence probe** when evidence is necessary to determine whether a genuine direction problem exists or whether the incumbent is supportable. Apply the test below, then return to the [SKILL.md](../SKILL.md) applicability/mode router. Exit if no direction problem remains. The probe is not automatically a terminal `Discovery Decision`; emit that record only when required evidence cannot be resolved in the bounded run and an actual stop or handoff is necessary.
+For standalone use only, discovery may serve a minimum bounded **applicability evidence probe** when evidence is necessary to determine whether a genuine direction problem exists or whether the incumbent is supportable. After the probe, return evidence and control to the [SKILL.md](../SKILL.md) applicability router. The router then exits, hands off, or enters a comparison mode. Discovery never emits a comparison outcome before comparison owns the decision.
 
 ## Discovery Entry Test
 
@@ -19,11 +19,11 @@ Every transition must satisfy all applicable conditions:
 1. **Specific material uncertainty:** a concrete unknown could materially affect applicability, the owning comparison stage, or the eventual direction result.
 2. **Decision sensitivity:** at least two plausible outcomes would change applicability, framing, candidates, ranking, or gate status.
 3. **Worth investigating now:** expected decision value is proportionate to cost, delay, risk, and commitment.
-4. **No sufficiently supported direction:** the current best-defined direction cannot meet the canonical Support threshold for the governed commitment while accepting this uncertainty.
+4. **No sufficiently supported direction (comparison only):** the current best-defined direction cannot meet the canonical Support threshold for the governed commitment while accepting this uncertainty.
 
-When the test fails, return to the owner. The applicability router may exit or hand off; comparison may use the best-supported direction with explicit residual uncertainty and a reopen condition, or leave the choice unresolved when action is optional and no direction is supportable.
+When the test fails, return to the owner. The applicability router may exit or hand off. A comparison owner may pass the best-supported direction with explicit residual uncertainty, return a `Direction Blocker`, or use the canonical adaptive path when its conditions hold.
 
-**Complete when:** all applicable conditions pass and a bounded step is defined, or a failing condition returns control to the owner, a focused user question, or an explicit unresolved state.
+**Complete when:** all applicable conditions pass and a bounded step is defined, or a failing condition returns control to the owner.
 
 ## Select the discovery step
 
@@ -40,15 +40,15 @@ Record before acting:
 
 Use the smallest contained experiment that yields representative evidence. Give higher-commitment experiments explicit limits, observability, and a rollback or exit path.
 
-Before evidence can resolve applicability or carry a deciding comparative claim, apply the deciding-evidence applicability rule in [SKILL.md](../SKILL.md). Cheap or discriminating evidence that does not represent the actual property, version, environment, integration effects, or claim at risk is informative but non-deciding.
+Before evidence can resolve applicability or carry a deciding comparative claim, apply the deciding-evidence applicability rule in [SKILL.md](../SKILL.md). Cheap or discriminating evidence that does not represent the actual property, version, environment, workload, integration effects, or claim at risk is informative but non-deciding.
 
 **Complete when:** the step has a named owner, uncertainty, discriminating outcomes, proportionate and future-horizon-reversible commitment, and checkable stop condition.
 
 ## Execute a bounded discovery loop
 
 1. Perform only the defined discovery work.
-2. Update only the affected applicability fact, problem model, assumptions, candidate set, evidence, or comparison.
-3. Return to the recorded owner and exact return point when the stop condition is met.
+2. Update only the affected applicability fact, problem model, assumptions, candidate space, evidence, or comparison.
+3. Return evidence and control to the recorded owner when the stop condition is met or the defined step cannot be completed.
 4. Before another discovery step, rerun the Discovery Entry Test against the remaining uncertainty.
 
 Continue only while a material unknown remains and the next step can realistically change the owner's result. Increase commitment only as support increases, and stop once a direction can pass its commitment-scoped gate with acceptable residual uncertainty.
@@ -62,4 +62,4 @@ Do not rerun discovery indefinitely merely because uncertainty remains.
 
 Exploratory code, scaffolding, prototypes, and migrations are disposable by default. They may not silently cross the governed consequential commitment boundary without a passing conventional direction or a passing bounded adaptive commitment. This does not block unrelated, already-supported, or safely future-horizon-reversible production work, and no pre-gate work may create de facto lock-in.
 
-The loop is **complete when:** applicable evidence resolves or bounds the uncertainty enough to return to the owner, another entry test fails and returns control, a terminal `Discovery Decision` is required, or structurally unstable uncertainty returns to the canonical adaptive path.
+The loop is **complete when:** applicable evidence resolves or bounds the uncertainty enough to return to the owner; the defined step fails or another entry test fails and returns control; or structurally unstable uncertainty returns to the canonical adaptive path. The owner—not discovery—selects and emits the resulting `Applicability Result`, `Direction Decision`, `Direction Blocker`, or `Adaptive Direction`.

@@ -1,39 +1,35 @@
 # Lightweight Direction Selection
 
-Use this branch only after the [SKILL.md](../SKILL.md) applicability router returns `lightweight`: a genuine direction choice is meaningful but bounded, or a direction is already supported enough to need proportionate confirmation. The canonical Support threshold, authoritative direction-space triggers, deciding-evidence applicability rule, future-horizon reversibility definition, authority semantics, and commitment-scoped Direction Gate in `../SKILL.md` all apply here.
+Use this branch only after the [SKILL.md](../SKILL.md) applicability router returns `lightweight`: a meaningful bounded choice is live, and the framing, ordered criteria, and candidate space are already adequate. The parent skill's authority semantics, Continuation invariant, Support threshold, deciding-evidence applicability rule, future-horizon reversibility definition, Direction Gate scope, and output contracts apply throughout.
 
 ## Procedure
 
-1. Record the goal, hard constraints, and direction-dependent commitment governed by this choice.
-2. Identify credible known alternatives. Do not search for another merely to fill the record or because one can be imagined.
-3. When the authoritative trigger set indicates that the candidate space itself is inadequately justified, perform only the proportionate omitted-direction search required by `../SKILL.md`.
-4. Compare serious alternatives under the shared ordered criteria when they exist, using symmetric standards and identifying the strongest surviving alternative.
-5. Resolve cheaply actionable decision-critical uncertainty through the fitting evidence route. If bounded discovery is warranted, read [DISCOVERY.md](DISCOVERY.md) completely; preserve this comparison as owner and resume this step afterward.
-6. Apply the shared deciding-evidence applicability rule before any evidence carries a decisive claim.
-7. Run falsification only when all shared falsification-trigger conditions are present. Run the zero-based diagnostic only when its incumbent or sunk-cost bias trigger is present.
-8. Judge the selected direction against the Support threshold using future-horizon reversibility.
-9. Set a concrete reopen condition. Escalate to `full` when a materially competitive, framing-sensitive, search-space-sensitive, weakly justified consequential, or materially evidence-challenged direction problem has emerged under the authoritative trigger set. Use an `Adaptive Direction` only when the canonical structural-instability conditions justify a bounded adaptive commitment.
+1. Record the goal, hard constraints, ordered criteria, governed commitment, and credible known alternatives. Do not search for another candidate merely to fill the record.
+2. Compare the known serious alternatives under the same decisive criteria. Identify the strongest surviving alternative when one exists. Do not count already-spent effort as support for an incumbent; count concrete future migration, compatibility, schedule, and operating costs.
+3. When one cheap decision-sensitive unknown prevents the Support threshold from passing, resolve it through the fitting evidence route. If bounded discovery is warranted, read [DISCOVERY.md](DISCOVERY.md) completely, preserve this comparison as owner, and resume this step afterward.
+4. Challenge one load-bearing reason only when it remains meaningfully uncertain and one cheap realistic check could change the winner. Apply the parent deciding-evidence applicability rule to the result. Skip this check when its trigger is absent.
+5. Judge the selected direction against the Support threshold using future-horizon reversibility. Set a concrete reopen condition, then return a `Direction Decision`, `Direction Blocker`, or justified `Adaptive Direction`.
 
-The existence of one credible competitor does not itself require full mode. A well-supported incumbent with no credible competitor or candidate-space signal need not acquire a manufactured alternative.
+Lightweight mode does not broaden or re-justify the candidate space. When an authoritative full-mode trigger emerges—including framing ambiguity, candidate-space inadequacy, consequential unresolved competition, weak comparative justification requiring structured challenge, or material evidence that changes the frame or candidate space—preserve all still-applicable work under the Continuation invariant and enter `full` at the earliest affected stage. Do not restart completed work.
 
 ## Lightweight Direction Gate
 
 Set `Direction Gate: PASS` only when every applicable condition holds:
 
-- the goal, constraints, and governed commitment are clear enough to choose;
-- the direction meets the shared Support threshold;
-- credible alternatives were compared if present or required by a candidate-space trigger;
-- each conditionally triggered search, falsification, or zero-based diagnostic was resolved enough;
-- decisive evidence is applicable to the claim it supports;
+- the goal, constraints, ordered criteria, and governed commitment are clear enough to choose;
+- every credible known alternative was compared symmetrically;
+- decisive evidence is applicable and proportionate;
+- any triggered cheap unknown or disconfirming check was resolved enough;
+- the selected direction meets the Support threshold;
 - reversibility was assessed at the likely future correction point; and
 - residual uncertainty is acceptable for the governed commitment and has a concrete reopen condition.
 
-Skipped mechanisms do not need to be performed or “passed.” The gate is a support result for this commitment and not broader implementation authority.
+Skipped mechanisms do not need to be performed or passed. The gate is a support result for this commitment and not broader implementation authority.
 
-**Complete when:** every applicable condition supports `PASS`, or the exact blocker returns to full comparison, bounded discovery, a focused user question, an Adaptive Direction, or an explicit unresolved state with `NOT PASSED`.
+**Complete when:** every applicable condition supports `PASS`; the exact blocker produces a `Direction Blocker`; structural instability justifies an `Adaptive Direction`; or an authoritative full-mode trigger preserves current work and transfers control to `full`.
 
 ## Record
 
-Use the canonical `Direction Decision`, `Discovery Decision`, or `Adaptive Direction` schema in [SKILL.md](../SKILL.md). A conventional passing record uses `Mode: lightweight`; `Alternatives rejected: none` is valid when no credible alternative existed and no trigger required candidate-space exploration.
+Use the canonical `Direction Decision`, `Direction Blocker`, or `Adaptive Direction` schema in [SKILL.md](../SKILL.md). A conventional passing record uses `Mode: lightweight` and states the exact governed commitment. `Alternatives / candidate-space result: none — no search required` is valid when no credible alternative existed.
 
 Return the local record and commitment-scoped gate status to the caller/controller. Continue only into work separately authorized by the user's request.

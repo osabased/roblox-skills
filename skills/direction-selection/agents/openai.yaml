@@ -1,4 +1,4 @@
 interface:
   display_name: "Direction Selection"
-  short_description: "Choose among genuinely competing directions"
-  default_prompt: "Use $direction-selection only when a material direction choice is genuinely live. Route it proportionately, avoid routine or cheaply reversible choices, and return the local decision plus Direction Gate status."
+  short_description: "Choose or reassess consequential directions"
+  default_prompt: "Use $direction-selection when a consequential direction must be chosen or reassessed. Exit routine or cheaply reversible choices, compare proportionately, and return the governed commitment plus Direction Gate status."
