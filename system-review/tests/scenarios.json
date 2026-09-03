@@ -1,0 +1,109 @@
+{
+  "purpose": "Prospective routing and behavior contract scenarios for system-review. CI verifies that the written skill and catalogue contain the mechanisms each scenario requires; it does not execute a language model.",
+  "scenarios": [
+    {
+      "id": "local-code-review-routes-away",
+      "prompt": "Review this single 25-line function for correctness and style defects.",
+      "expected_owner": "code-review",
+      "expected_behavior": "system-review does not activate",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "Skip ordinary local code review"},
+        {"path": "system-review/SKILL.md", "contains": "Keep local implementation review with the code-review path"}
+      ]
+    },
+    {
+      "id": "roblox-organization-routes-away",
+      "prompt": "Decide whether ClientMain belongs in ReplicatedStorage or StarterPlayerScripts.",
+      "expected_owner": "structure-roblox-projects",
+      "expected_behavior": "system-review does not activate unless placement causes a cross-component failure",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "Roblox organization-only work"},
+        {"path": "system-review/SKILL.md", "contains": "Keep Roblox DataModel organization with `structure-roblox-projects`"},
+        {"path": "README.md", "contains": "Roblox DataModel placement, runtime ownership, entrypoints"}
+      ]
+    },
+    {
+      "id": "resource-selection-routes-away",
+      "prompt": "Compare Zap and Blink for a Roblox networking layer.",
+      "expected_owner": "roblox-resource-acquisition",
+      "expected_behavior": "resource qualification owns the immediate task",
+      "checks": [
+        {"path": "README.md", "contains": "A Roblox community resource must be found, qualified, adopted, refreshed, or repaired"},
+        {"path": "README.md", "contains": "Let the domain owner establish facts or preferences first"}
+      ]
+    },
+    {
+      "id": "subjective-choice-routes-away",
+      "prompt": "Choose the visual direction for a consequential UI redesign when my taste is unclear.",
+      "expected_owner": "subjective-taste-alignment",
+      "expected_behavior": "taste alignment owns the immediate uncertainty",
+      "checks": [
+        {"path": "README.md", "contains": "A consequential subjective choice is unresolved"},
+        {"path": "README.md", "contains": "Applicable taste, current intent, and preference-sensitive propagation"}
+      ]
+    },
+    {
+      "id": "retry-failure-invokes-system-review",
+      "prompt": "Review checkout across an API, queue, worker, database, and payment provider for duplicate charging after retries.",
+      "expected_owner": "system-review",
+      "expected_behavior": "exercise retry, duplication, authority, and idempotency across components",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "retry, duplication, reordering, interruption, and concurrency"},
+        {"path": "system-review/SKILL.md", "contains": "consistency, ordering, idempotency, or concurrency guarantees"}
+      ]
+    },
+    {
+      "id": "missing-evidence-is-a-visibility-gap",
+      "prompt": "Review operational reliability, but no logs, traces, failure tests, or deployment evidence are available.",
+      "expected_owner": "system-review",
+      "expected_behavior": "return a decision-sensitive visibility gap or INSUFFICIENT EVIDENCE instead of inventing a defect",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "missing decision-sensitive evidence is a visibility gap"},
+        {"path": "system-review/SKILL.md", "contains": "`INSUFFICIENT EVIDENCE` — a decision-sensitive gap prevents a supported verdict"}
+      ]
+    },
+    {
+      "id": "duplicate-symptoms-collapse-to-root-cause",
+      "prompt": "An API timeout, worker backlog, and client error all originate from one blocking downstream dependency.",
+      "expected_owner": "system-review",
+      "expected_behavior": "report one demonstrated upstream cause with downstream symptoms as evidence",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "Collapse symptoms into the most upstream demonstrated root cause"},
+        {"path": "system-review/references/cross-agent-synthesis.md", "contains": "one demonstrated upstream cause absorbs downstream symptoms as supporting evidence"}
+      ]
+    },
+    {
+      "id": "clean-review-can-pass",
+      "prompt": "All relevant end-to-end and failure-injection scenarios pass and no material evidence contradicts the design.",
+      "expected_owner": "system-review",
+      "expected_behavior": "return PASS without manufacturing criticism or continuing architecture optimization",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "`PASS` — relevant scenarios passed"},
+        {"path": "system-review/SKILL.md", "contains": "A preferable alternative architecture is not by itself a reason to continue"}
+      ]
+    },
+    {
+      "id": "multiple-corrections-hand-off-direction",
+      "prompt": "The current design demonstrably fails, but a queue, workflow engine, and outbox are all credible consequential corrections.",
+      "expected_owner": "system-review -> direction-selection",
+      "expected_behavior": "preserve the diagnosis and hand comparative replacement selection to direction-selection",
+      "checks": [
+        {"path": "system-review/SKILL.md", "contains": "When two or more materially different consequential corrections remain credible"},
+        {"path": "system-review/SKILL.md", "contains": "Direction handoff"},
+        {"path": "system-review/SKILL.md", "contains": "Hand the decision to `direction-selection`"},
+        {"path": "README.md", "contains": "it hands the decision to `direction-selection`"}
+      ]
+    },
+    {
+      "id": "cross-agent-round-is-bounded",
+      "prompt": "Independent operational and security reviewers exchange one relevant signal; the re-check produces no new evidence.",
+      "expected_owner": "system-review internal synthesis reference",
+      "expected_behavior": "reconcile once without voting or opening another generic review round",
+      "checks": [
+        {"path": "system-review/references/cross-agent-synthesis.md", "contains": "Agreement is not evidence"},
+        {"path": "system-review/references/cross-agent-synthesis.md", "contains": "Run a second signal round only when the first re-check produces materially new evidence"},
+        {"path": "system-review/references/cross-agent-synthesis.md", "contains": "Do not start remediation or another review cycle from this reference"}
+      ]
+    }
+  ]
+}
