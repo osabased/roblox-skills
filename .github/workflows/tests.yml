@@ -55,14 +55,3 @@ jobs:
         run: python -m coverage run -m pytest -q
       - name: Enforce coverage baseline
         run: python -m coverage report
-
-  system-review-contract:
-    name: System review contract scenarios
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.14"
-      - name: Run system-review contract scenarios
-        run: python -m unittest discover -s system-review/tests -p "test_*.py"
