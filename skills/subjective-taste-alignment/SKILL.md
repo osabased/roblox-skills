@@ -1,6 +1,6 @@
 ---
 name: subjective-taste-alignment
-description: Align consequential subjective choices with the user's applicable taste, current intent, constraints, ownership, and delegated authority. Use when creative direction is uncertain or a preference-sensitive choice could propagate into costly work.
+description: Taste alignment for consequential subjective choices when creative direction is uncertain or preference-sensitive decisions would propagate.
 compatibility: Python 3.8+ is required for executable harness and scenario checks. Without Python, apply the same contracts explicitly and report executable verification as unavailable rather than pretending it ran.
 ---
 
