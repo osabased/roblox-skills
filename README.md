@@ -2,8 +2,8 @@
 
 | Problem | Owning skill |
 |---|---|
-| Materially different consequential directions remain competitive | [**direction-selection**](./skills/direction-selection/) |
-| A consequential subjective choice is unresolved | [**subjective-taste-alignment**](./skills/subjective-taste-alignment/) |
-| A defined system may fail across components or operational conditions | [**system-review**](./skills/system-review/) |
-| Roblox DataModel placement, runtime ownership, entrypoints, grouping, or source-of-truth workflow | [**structure-roblox-projects**](./skills/structure-roblox-projects/) |
-| A Roblox community resource must be found, qualified, adopted, refreshed, or repaired | [**roblox-resource-acquisition**](./skills/roblox-resource-acquisition/) |
+| My agent is having trouble choosing between multiple viable directions | [**direction-selection**](./skills/direction-selection/) |
+| My agent is having trouble matching my taste or making subjective choices | [**subjective-taste-alignment**](./skills/subjective-taste-alignment/) |
+| My agent is having trouble finding problems that emerge across a system | [**system-review**](./skills/system-review/) |
+| My agent is having trouble organizing the structure of my Roblox project | [**structure-roblox-projects**](./skills/structure-roblox-projects/) |
+| My agent is having trouble finding, choosing, or managing a Roblox community resource | [**roblox-resource-acquisition**](./skills/roblox-resource-acquisition/) |
