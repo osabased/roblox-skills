@@ -1,6 +1,6 @@
 ---
 name: system-review
-description: Review software systems when correctness depends on interactions among multiple components or operational failure behavior. Use for system or architecture review of data flow, authority, consistency, reliability, scalability, security boundaries, technology fit, or failure handling. Skip ordinary local code review and Roblox organization-only work.
+description: Review software systems when correctness depends on interactions among multiple components or operational failure behavior. Use for system or architecture review of data flow, authority, consistency, reliability, scalability, security boundaries, technology fit, or failure handling. Skip ordinary local code review, Roblox organization-only work, and selection among competing replacement directions.
 ---
 
 # System Review
@@ -63,19 +63,28 @@ When two or more genuinely distinct independent perspectives can materially chan
 
 **Complete when:** every material conclusion is supported by an exercised scenario, observed state, requirement, or applicable authority; required blocked checks are explicit.
 
-## 4. Qualify and reconcile findings
+## 4. Qualify, reconcile, and hand off
 
 A finding survives only when it has:
 
 1. **Evidence** — what demonstrates the condition.
 2. **Consequence** — the material behavior, requirement, security property, operability, or credible commitment harmed.
-3. **Correction** — the smallest coherent change that addresses the demonstrated cause.
+3. **Correction or handoff** — one evidence-determined smallest coherent correction, or an explicit direction handoff when selection remains open.
 
 Treat insufficient evidence as a visibility gap when it can change the verdict. Treat preferences, generic best practices, absent fashionable patterns, and unsupported future scale as non-findings.
 
 Collapse symptoms into the most upstream demonstrated root cause and attach downstream observations as evidence. Keep independent causes separate.
 
-**Complete when:** every surviving finding is materially distinct, evidence-backed, and root-cause reconciled; every decision-sensitive gap is explicit.
+System review owns diagnosis, not comparative replacement selection. Use a smallest coherent correction when the evidence determines one. When two or more materially different consequential corrections remain credible, preserve the finding and return a **Direction handoff** containing:
+
+- the defect and exposing scenario evidence;
+- hard constraints and invariants that the correction must satisfy;
+- the exact decision boundary;
+- already-established correction options, if any, stated without ranking.
+
+Hand the decision to `direction-selection` when the surrounding task includes choosing the correction. Otherwise return the handoff to the caller. Do not search for or rank replacement directions inside this review.
+
+**Complete when:** every surviving finding is materially distinct and evidence-backed, every decision-sensitive gap is explicit, and each finding has either one evidence-determined correction or a direction handoff.
 
 ## 5. Return the review
 
@@ -96,6 +105,10 @@ For each demonstrated defect:
 - **Scenario:** exposing behavior or failure path
 - **Consequence:** material effect
 - **Correction:** smallest coherent correction
+
+When correction selection remains open, replace `Correction` with:
+
+- **Direction handoff:** decision boundary, hard constraints, and evidence to pass to `direction-selection`.
 
 ### Visibility Gaps
 
@@ -119,3 +132,5 @@ Verdicts mean:
 - `INSUFFICIENT EVIDENCE` — a decision-sensitive gap prevents a supported verdict.
 
 Stop when the applicable scenarios are exercised and no demonstrated material defect remains. A preferable alternative architecture is not by itself a reason to continue.
+
+**Complete when:** the verdict follows from the recorded findings, visibility gaps, validated areas, and checks actually performed, then control returns to the caller.
