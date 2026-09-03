@@ -1,7 +1,5 @@
 ## Skill catalogue
 
-Use the narrowest skill that owns the current problem.
-
 | Problem | Owning skill |
 |---|---|
 | Materially different consequential directions remain competitive | [**direction-selection**](./direction-selection/) |
