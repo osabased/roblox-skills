@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fresh-Context Behavioral Review"
+  short_description: "Cold-review implementation behavior without author rationale"
+  default_prompt: "Use $fresh-context-behavioral-review to verify non-trivial implementation from a cold context. Keep requirements, repository contracts, dependencies, and tests; exclude the implementer's rationale and prior self-review. Exercise behavioral scenarios and report only evidence-backed material defects or blocked verification."
