@@ -1,6 +1,6 @@
 ---
 name: direction-selection
-description: Compare and select among genuine direction choices when materially different directions compete, framing or candidate-space adequacy is uncertain, comparative justification is weak, or material new evidence challenges a direction. Do not use for routine, obvious, or cheaply reversible implementation choices.
+description: Direction selection for consequential choices when alternatives compete, the search space is uncertain, or evidence challenges the current direction.
 ---
 
 # Direction Selection
