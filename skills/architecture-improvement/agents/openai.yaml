@@ -1,0 +1,6 @@
+interface:
+  display_name: "Architecture Improvement"
+  short_description: "Make one justified architecture improvement"
+  default_prompt: "Use $architecture-improvement to decide whether one bounded architecture change is justified, implement it autonomously when safe, and stop with NO CHANGE when the evidence does not support intervention."
+policy:
+  allow_implicit_invocation: false
