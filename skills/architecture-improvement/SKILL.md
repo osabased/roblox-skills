@@ -12,7 +12,7 @@ Invoking this skill authorizes code changes after the intervention gate passes, 
 
 ## Operating contract
 
-This skill owns architectural intervention within a bounded codebase scope. It does not turn local defects, spec deviations, generic code smells, or preferable designs into architecture work without evidence that architecture materially causes the problem.
+This skill owns architectural intervention within a bounded codebase scope. It does not turn local defects, spec deviations, generic code smells, or preferable designs into architecture work without evidence that architecture materially causes or obstructs a demonstrated need.
 
 Complete one coherent architectural objective per invocation. Preserve unrelated work and stop rather than widening into a cleanup campaign.
 
@@ -35,6 +35,7 @@ Read applicable repository instructions, domain documentation, ADRs, standards, 
 Inspect the target through its callers, dependencies, interfaces, tests, and change history. Look for demonstrated engineering friction such as:
 
 - one behavior repeatedly requiring coordinated edits across callers;
+- an authorized near-term change that the current structure would spread across callers or layers;
 - callers duplicating policy or learning implementation details;
 - an interface nearly as complex as the behavior behind it;
 - tests bypassing the interface because meaningful behavior cannot be exercised through it;
@@ -47,7 +48,7 @@ These are leads, not findings. Do not generate a fixed number of candidates.
 For each credible candidate, record:
 
 - concrete friction and its evidence;
-- recurrence or one-time material consequence;
+- recurrence, current material consequence, or committed change affected;
 - affected callers, tests, and behavior;
 - the architectural cause;
 - the smallest local alternative;
@@ -61,7 +62,7 @@ For each credible candidate, record:
 
 A candidate authorizes architectural change only when every condition is supported:
 
-1. **Demonstrated friction** — repository evidence shows recurring engineering cost or a one-time consequence material enough to justify intervention.
+1. **Demonstrated need** — concrete evidence shows recurring engineering cost, a current material consequence, or an authorized near-term change that the present structure materially obstructs.
 2. **Architectural causality** — the current module, interface, seam, or dependency structure materially contributes to that friction.
 3. **Direct improvement** — the proposed change reduces the demonstrated cost rather than merely moving complexity or changing style.
 4. **Superiority** — the intervention has a better supported expected outcome than doing nothing or applying the smallest local correction.
@@ -71,7 +72,7 @@ A candidate authorizes architectural change only when every condition is support
 
 Falsify the candidate before acting. Seek evidence that the current design is adequate, the friction is isolated, a local fix is enough, the proposed seam is hypothetical, the abstraction only relocates knowledge, the benefit is speculative, or an ADR explains the present structure.
 
-Code smells, unusual organization, personal preference, hypothetical scale, and a cleaner-looking design cannot pass the gate by themselves. Do not lower the threshold because no other candidate exists.
+Invocation authorizes evaluation; it is not evidence that a change is needed. Code smells, unusual organization, personal preference, hypothetical scale, and a cleaner-looking design cannot pass the gate by themselves. Do not lower the threshold because no other candidate exists.
 
 **Complete when:** each credible candidate either passes every gate condition or has a recorded rejection reason.
 
