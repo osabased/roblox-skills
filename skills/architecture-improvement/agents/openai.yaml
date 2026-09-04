@@ -1,6 +1,6 @@
 interface:
   display_name: "Architecture Improvement"
   short_description: "Make one justified architecture improvement"
-  default_prompt: "Use $architecture-improvement to decide whether one bounded architecture change is justified, delegate large-codebase reconnaissance to capability-matched explorers and probes, implement autonomously when safe, and stop with NO CHANGE when intervention is unsupported."
+  default_prompt: "Use $architecture-improvement to evaluate one bounded codebase scope. Delegate large reconnaissance to capability-matched explorers and probes, make one justified improvement autonomously when safe, and return NO CHANGE when intervention is unsupported."
 policy:
   allow_implicit_invocation: false
