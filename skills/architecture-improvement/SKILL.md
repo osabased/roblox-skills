@@ -18,6 +18,8 @@ Complete one coherent architectural objective per invocation. Preserve unrelated
 
 Resolve inspectable engineering questions from the repository and available tools. Escalate only when progress depends on user-owned product intent, externally visible compatibility policy, reopening an authoritative decision, an irreversible migration, or another material choice that repository evidence cannot settle.
 
+Keep the controller's context for synthesis, design, implementation, and verification. When direct inspection would consume it materially, delegate bounded read-only reconnaissance and load only decision-relevant evidence.
+
 When available, invoke `$codebase-design` before judging candidates. Use its architecture vocabulary and principles; repository requirements, standards, domain language, and ADRs remain authoritative.
 
 ## 1. Establish the target
@@ -26,13 +28,15 @@ If the user names a module, subsystem, pain point, or change, use that scope.
 
 Otherwise perform a bounded scope triage using recent change history, recurring fixes, current branch work, test friction, and repository guidance. Select the strongest-supported target for deep inspection. If no area has a credible reason for inspection, return `NO CHANGE`. Churn identifies where to look; it is not proof that intervention is warranted. Do not scan the entire repository deeply or widen merely because the selected target is healthy.
 
+Estimate the reconnaissance cost before loading source. When the target is large or unfamiliar, several independent regions need mapping, or direct inspection would materially consume the controller's context, read [references/RECONNAISSANCE.md](references/RECONNAISSANCE.md) completely and apply it. The controller chooses each explorer or probe's capability, retains decision authority, and verifies decisive delegated claims.
+
 Read applicable repository instructions, domain documentation, ADRs, standards, tests, and nearby implementation. Record the starting revision, working-tree state, and relevant baseline checks so pre-existing failures and user changes are not attributed to this invocation.
 
-**Complete when:** one bounded target, its authoritative context, and its observable baseline are clear, or the bounded triage supports stopping without a target.
+**Complete when:** one bounded target, its authoritative context, observable baseline, and direct or delegated reconnaissance boundary are clear, or bounded triage supports stopping without a target.
 
 ## 2. Gather intervention evidence
 
-Inspect the target through its callers, dependencies, interfaces, tests, and change history. Look for a demonstrated architectural need, using evidence such as:
+Inspect the target directly or synthesize bounded reconnaissance packets across its callers, dependencies, interfaces, tests, and change history. Look for a demonstrated architectural need, using evidence such as:
 
 - one behavior repeatedly requiring coordinated edits across callers;
 - an authorized near-term change that the current structure would spread across callers or layers;
@@ -43,7 +47,7 @@ Inspect the target through its callers, dependencies, interfaces, tests, and cha
 - tightly coupled modules whose changes repeatedly propagate across the seam;
 - pass-through structure that relocates rather than hides complexity.
 
-These are leads, not findings. Do not generate a fixed number of candidates.
+These are leads, not findings. Do not generate a fixed number of candidates. A delegated report is also a lead until its decisive claims have applicable provenance and are directly checked or independently corroborated.
 
 For each credible candidate, record:
 
@@ -56,7 +60,9 @@ For each credible candidate, record:
 - migration, regression, and ongoing abstraction cost;
 - observable evidence that would show the improvement succeeded.
 
-**Complete when:** the inspected evidence either supports at least one fully described candidate or supports stopping with no candidate.
+When many signals appear, determine whether they are independent problems, symptoms of one shared architectural cause, or widespread style disorder. Do not choose the loudest smell merely because it is easy to name.
+
+**Complete when:** the inspected evidence and delegated coverage either support at least one fully described candidate or support stopping with no candidate, and every decisive claim has traceable provenance.
 
 ## 3. Apply the intervention gate
 
@@ -71,6 +77,8 @@ A candidate authorizes architectural change only when every condition is support
 7. **Verifiability** — observable checks can establish both preserved behavior and the claimed architectural benefit.
 
 Falsify the candidate before acting. Seek evidence that the current design is adequate, the friction is isolated, a local fix is enough, the proposed seam is hypothetical, the abstraction only relocates knowledge, the benefit is speculative, or an ADR explains the present structure.
+
+When a candidate depends on cross-area inference, conflicting delegated reports, or evidence gathered mainly by low-capability scans, use a focused challenger probe or perform the decisive reasoning directly before passing the gate.
 
 Invocation authorizes evaluation; it is not evidence that a change is needed. Code smells, unusual organization, personal preference, hypothetical scale, and a cleaner-looking design cannot pass the gate by themselves. Do not lower the threshold because no other candidate exists.
 
@@ -88,7 +96,9 @@ Use the evidence to choose exactly one route:
 
 Choose ordinary engineering tradeoffs autonomously. When materially different consequential architecture directions remain credible and evidence does not establish a winner, invoke `$direction-selection` with the established friction, constraints, candidates, migration effects, and verification needs. Continue only if its Direction Gate passes for this commitment. Do not invoke it to manufacture alternatives.
 
-Use `EXECUTE` only when all affected callers and compatibility obligations can be traced, the old path can be fully retired or intentionally retained, required verification can run, and no unresolved material decision remains. Use `PLANNING HANDOFF` only when those conditions genuinely require staged work; size alone is not a reason to avoid execution. Do not use `BLOCKED` for ordinary engineering uncertainty.
+Use `EXECUTE` only when all affected callers and compatibility obligations can be traced, the old path can be fully retired or intentionally retained, required verification can run, and no unresolved material decision remains. Use `PLANNING HANDOFF` when the demonstrated cause is systemic, migration dependencies require ordered slices, or one invocation would leave an unsafe mixed architecture. Size alone is not a reason to avoid execution. Do not use `BLOCKED` for ordinary engineering uncertainty.
+
+For systemic degradation, preserve the shared causal structure, affected behavior, required stabilization, migration order, first safe executable slice, verification obligations, and retirement conditions in the planning handoff. Do not convert widespread smells into a repository-wide rewrite.
 
 **Complete when:** one route follows from the intervention evidence and no candidate selection is being deferred to the user.
 
@@ -142,7 +152,7 @@ Verify the applicable architecture claims directly:
 - obsolete paths and speculative seams are absent;
 - the result still satisfies repository requirements and ADRs.
 
-Inspect the final diff for accidental scope growth, unrelated cleanup, compatibility residue, dead code, and temporary files. If the work cannot be completed or a required check is blocked, do not report `IMPROVED`. Restore only changes made by this invocation when that is safe; otherwise report the exact residuals as `BLOCKED`.
+Inspect the final diff for accidental scope growth, unrelated cleanup, compatibility residue, dead code, and temporary files. Remove task-created reconnaissance artifacts. If the work cannot be completed or a required check is blocked, do not report `IMPROVED`. Restore only changes made by this invocation when that is safe; otherwise report the exact residuals as `BLOCKED`.
 
 Stop after this objective. Other opportunities do not extend the current invocation.
 
@@ -156,6 +166,7 @@ Return:
 
 - **Scope:** bounded target and revision
 - **Disposition:** `IMPROVED` | `NO CHANGE` | `LOCAL HANDOFF` | `PLANNING HANDOFF` | `BLOCKED`
+- **Reconnaissance:** direct or delegated coverage, capability profiles used, and material limits or assignment mismatches
 - **Evidence:** decisive repository evidence
 - **Intervention gate:** pass/fail by condition, with only material reasons
 - **Objective:** selected architectural change, local correction boundary, planning target, or `none`
