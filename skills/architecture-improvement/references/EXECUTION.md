@@ -38,7 +38,7 @@ When implementation evidence weakens the demonstrated need, architectural cause,
 
 ## 3. Verify and clean up
 
-Run every repository check, focused behavioral test, and broader regression check justified by the affected surface. Exercise normal usage and material edge, failure, retry, ordering, and migration scenarios where applicable. After a correction, rerun each failed check and each previously passing check whose assumptions changed.
+Run every relevant repository check, focused behavioral test, and broader regression check justified by the affected surface. Exercise normal usage and material edge, failure, retry, ordering, and migration scenarios where applicable. After a correction, rerun each failed check and each previously passing check whose assumptions changed.
 
 When `$system-review` established affected scenarios, rerun every failed or invalidated scenario rather than beginning a new broad review.
 
