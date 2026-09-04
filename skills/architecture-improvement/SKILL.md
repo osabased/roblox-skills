@@ -14,7 +14,7 @@ Invocation authorizes code changes only after the Intervention Gate passes, subj
 
 This skill owns changes to module, interface, seam, or dependency structure. Local defects, spec deviations, code smells, and preferable designs remain with their fitting owners unless architecture materially causes or obstructs a demonstrated need.
 
-Complete one architectural objective per invocation. Preserve unrelated work and return other observations without extending the scope.
+Complete one architectural objective per invocation. Preserve unrelated work; other observations do not extend this invocation.
 
 Resolve repository-owned facts through the repository and available tools. Escalate only for user-owned product intent, externally visible compatibility policy, reopening an authoritative decision, an irreversible migration, or another material choice the available evidence cannot settle.
 
