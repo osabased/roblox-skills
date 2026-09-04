@@ -15,7 +15,7 @@ The controller owns:
 - intervention authorization and route selection;
 - every write and final conclusion.
 
-Delegated agents operate read-only and return evidence packets. The controller alone authorizes scope changes, further delegation, interventions, and writes.
+Delegated agents are read-only with respect to repository source and return evidence packets. They may run safe inspection or diagnostic commands within the work-order blast radius. The controller alone authorizes scope changes, further delegation, interventions, and source writes.
 
 A packet is evidence input, not a finding. Verify every decisive delegated claim directly or through applicable independent corroboration before it can pass the Intervention Gate.
 
@@ -23,7 +23,7 @@ A packet is evidence input, not a finding. Verify every decisive delegated claim
 
 The active controller must be capable of `judge`-level synthesis: reconciling cross-area evidence, attributing architectural causes, falsifying candidates, and authorizing consequential change.
 
-When the active controller cannot reliably perform that work, transfer the entire invocation to the strongest available judge-capable agent before reconnaissance. When transfer is unavailable, narrow the target until the controller can judge it reliably or return `BLOCKED` with the capability limit. Stronger delegated agents can supply evidence; they cannot replace final controller judgment.
+When the active controller cannot reliably perform that work, switch to the strongest available judge-capable controller profile before reconnaissance. When the harness cannot switch controllers, narrow the target until the active controller can judge it reliably or return `BLOCKED` with the capability limit. Stronger delegated agents can supply and challenge evidence; they cannot authorize final action.
 
 ## 1. Map and partition
 
@@ -82,7 +82,7 @@ Assign the lowest reliable capability:
 
 - **`scan`** — inventories, searches, call-site enumeration, history or test indexing, and other bounded low-ambiguity work with easily checked output;
 - **`reason`** — mapping one subsystem, tracing one interaction, reconciling implementation with tests, or evaluating a local causal hypothesis;
-- **`judge`** — cross-area synthesis, conflicting authority or evidence, architectural causal attribution, candidate falsification, or reasoning that could authorize consequential change.
+- **`judge`** — cross-area synthesis, conflicting authority or evidence, architectural causal attribution, candidate falsification, or analysis that materially informs authorization of consequential change.
 
 Repository size increases partitioned scanning, not the intelligence required for every agent. Split broad mechanical work across `scan` agents and reserve stronger capability for ambiguity, omission risk, consequence, or weak verifiability.
 
