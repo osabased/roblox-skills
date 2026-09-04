@@ -22,7 +22,7 @@ Use `$codebase-design` when available. Its vocabulary and principles guide archi
 
 ## 1. Establish the target
 
-Use a module, subsystem, pain point, or change named by the user.
+Use a module, subsystem, pain point, or change named by the user. Treat a repository-wide request as authority for the bounded triage below, not as a requirement to inspect every file.
 
 Otherwise perform bounded triage from recent history, recurring fixes, current branch work, test friction, and repository guidance. Select the strongest-supported area for inspection. Return `NO CHANGE` when no area has a credible reason for deeper inspection. Churn is a scope signal, not evidence that intervention is warranted.
 
@@ -41,6 +41,7 @@ Potential evidence includes:
 - one behavior repeatedly requiring coordinated edits across callers;
 - an authorized near-term change that the current structure would spread across callers or layers;
 - callers duplicating policy or depending on implementation knowledge;
+- an interface nearly as complex as the behavior behind it;
 - meaningful behavior that tests cannot exercise through the interface;
 - recurring defects or regressions at the same seam;
 - pass-through or tightly coupled structure that relocates change knowledge instead of hiding it.
