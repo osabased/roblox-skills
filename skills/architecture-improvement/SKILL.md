@@ -22,9 +22,9 @@ Use `$codebase-design` when available. Its vocabulary and principles guide archi
 
 ## 1. Establish the target
 
-Use a module, subsystem, pain point, or change named by the user. Treat a repository-wide request as authority for the bounded triage below, not as a requirement to inspect every file.
+Use a bounded module, subsystem, pain point, or change named by the user.
 
-Otherwise perform bounded triage from recent history, recurring fixes, current branch work, test friction, and repository guidance. Select the strongest-supported area for inspection. Return `NO CHANGE` when no area has a credible reason for deeper inspection. Churn is a scope signal, not evidence that intervention is warranted.
+When the user names the whole repository or supplies no bounded target, perform bounded triage from recent history, recurring fixes, current branch work, test friction, and repository guidance. Select the strongest-supported area for inspection. Return `NO CHANGE` when no area has a credible reason for deeper inspection. Churn is a scope signal, not evidence that intervention is warranted.
 
 Estimate reconnaissance cost before loading source. When the target is large or unfamiliar, several independent regions need mapping, or direct inspection would materially consume the controller's context, read [references/RECONNAISSANCE.md](references/RECONNAISSANCE.md) completely and apply it.
 
@@ -46,7 +46,7 @@ Potential evidence includes:
 - recurring defects or regressions at the same seam;
 - pass-through or tightly coupled structure that relocates change knowledge instead of hiding it.
 
-These are leads. A code smell, delegated report, or unusual structure becomes a candidate only when its decisive claims have applicable provenance.
+These are leads. Form a candidate only when concrete evidence connects a demonstrated need to an architectural cause. A delegated claim also needs applicable provenance before it can support the candidate.
 
 For each credible candidate, record:
 
