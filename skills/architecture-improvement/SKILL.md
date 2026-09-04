@@ -32,7 +32,7 @@ Read applicable repository instructions, domain documentation, ADRs, standards, 
 
 ## 2. Gather intervention evidence
 
-Inspect the target through its callers, dependencies, interfaces, tests, and change history. Look for demonstrated engineering friction such as:
+Inspect the target through its callers, dependencies, interfaces, tests, and change history. Look for a demonstrated architectural need, using evidence such as:
 
 - one behavior repeatedly requiring coordinated edits across callers;
 - an authorized near-term change that the current structure would spread across callers or layers;
@@ -47,7 +47,7 @@ These are leads, not findings. Do not generate a fixed number of candidates.
 
 For each credible candidate, record:
 
-- concrete friction and its evidence;
+- concrete need and its evidence;
 - recurrence, current material consequence, or committed change affected;
 - affected callers, tests, and behavior;
 - the architectural cause;
@@ -63,8 +63,8 @@ For each credible candidate, record:
 A candidate authorizes architectural change only when every condition is supported:
 
 1. **Demonstrated need** — concrete evidence shows recurring engineering cost, a current material consequence, or an authorized near-term change that the present structure materially obstructs.
-2. **Architectural causality** — the current module, interface, seam, or dependency structure materially contributes to that friction.
-3. **Direct improvement** — the proposed change reduces the demonstrated cost rather than merely moving complexity or changing style.
+2. **Architectural causality** — the current module, interface, seam, or dependency structure materially causes or obstructs the demonstrated need.
+3. **Direct improvement** — the proposed change directly addresses the demonstrated need rather than merely moving complexity or changing style.
 4. **Superiority** — the intervention has a better supported expected outcome than doing nothing or applying the smallest local correction.
 5. **Proportionality** — expected benefit exceeds migration work, regression exposure, and the permanent cost of the new structure.
 6. **Compatibility** — the change respects applicable behavior, constraints, and authoritative decisions, or has explicit authority to revise them.
@@ -132,7 +132,7 @@ Run every relevant repository check, focused behavioral test, and broader regres
 
 When `$system-review` established affected scenarios, rerun every failed or invalidated scenario after implementation rather than starting a fresh broad review.
 
-Verify the architecture claim directly:
+Verify the applicable architecture claims directly:
 
 - callers rely on fewer implementation details;
 - the demonstrated coordination or duplication is actually reduced;
