@@ -24,11 +24,11 @@ When available, invoke `$codebase-design` before judging candidates. Use its arc
 
 If the user names a module, subsystem, pain point, or change, use that scope.
 
-Otherwise choose one likely high-value area before inspecting deeply. Use recent change history, recurring fixes, current branch work, test friction, and repository guidance as scope signals. Churn identifies where to look; it is not proof that intervention is warranted. Do not scan the entire repository by default.
+Otherwise perform a bounded scope triage using recent change history, recurring fixes, current branch work, test friction, and repository guidance. Select the strongest-supported target for deep inspection. If no area has a credible reason for inspection, return `NO CHANGE`. Churn identifies where to look; it is not proof that intervention is warranted. Do not scan the entire repository deeply or widen merely because the selected target is healthy.
 
 Read applicable repository instructions, domain documentation, ADRs, standards, tests, and nearby implementation. Record the starting revision, working-tree state, and relevant baseline checks so pre-existing failures and user changes are not attributed to this invocation.
 
-**Complete when:** one bounded target, its authoritative context, and its observable baseline are clear.
+**Complete when:** one bounded target, its authoritative context, and its observable baseline are clear, or the bounded triage supports stopping without a target.
 
 ## 2. Gather intervention evidence
 
